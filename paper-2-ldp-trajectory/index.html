@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نشر مسارات الخصوصية التفاضلية المحلية — LDPTP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        tags: 'ams'
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header class="paper-header">
+  <div class="conference-badge">IEEE Transactions on Information Forensics and Security — المجلد 20، 2025، الصفحات 6719–6732</div>
+  <h1>
+    نشر مسارات الخصوصية التفاضلية المحلية<br>القائم على الوعي بالشعبية الإقليمية
+  </h1>
+  <p style="opacity:.85; font-size:.95rem; margin-top:.8rem;">
+    <span dir="ltr" style="unicode-bidi:isolate;">DOI: 10.1109/TIFS.2025.3577967</span>
+  </p>
+  <div class="authors-grid" style="max-width:780px; margin:1.5rem auto 0;">
+    <div class="author-card">
+      <div class="name">Dongyue Zhang</div>
+      <div class="email">جامعة جنوب شرق — نانجينغ، الصين</div>
+    </div>
+    <div class="author-card">
+      <div class="name">Weiwei Ni</div>
+      <div class="email">جامعة جنوب شرق — نانجينغ، الصين</div>
+    </div>
+    <div class="author-card">
+      <div class="name">Nan Fu</div>
+      <div class="email">جامعة جنوب شرق — نانجينغ، الصين</div>
+    </div>
+    <div class="author-card">
+      <div class="name">Lihe Hou</div>
+      <div class="email">عضو IEEE — جامعة جنوب شرق</div>
+    </div>
+    <div class="author-card">
+      <div class="name">Ruyu Zhang</div>
+      <div class="email">جامعة جنوب شرق — نانجينغ، الصين</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     BACK LINK
+══════════════════════════════════════════ -->
+<a href="../index.html" class="back-link">→ العودة إلى قائمة الأوراق البحثية</a>
+
+<!-- ══════════════════════════════════════════
+     TABLE OF CONTENTS
+══════════════════════════════════════════ -->
+<nav class="toc">
+  <h2>فهرس المحتويات</h2>
+  <ol>
+    <li><a href="#abstract">الملخص</a></li>
+    <li><a href="#introduction">I. المقدمة</a></li>
+    <li><a href="#related">II. الأعمال السابقة</a></li>
+    <li><a href="#preliminaries">III. المفاهيم الأساسية</a></li>
+    <li><a href="#methodology">IV. المنهجية المقترحة</a></li>
+    <li><a href="#experiments">V. التقييم التجريبي</a></li>
+    <li><a href="#conclusion">VI. الخاتمة</a></li>
+    <li><a href="#references">المراجع</a></li>
+  </ol>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════ -->
+<main>
+
+<!-- ── Abstract ── -->
+<section id="abstract">
+  <div class="abstract-box">
+    <div class="abstract-label">الملخص</div>
+    <p>
+      يُعدّ نشر بيانات المسارات التاريخية للمستخدمين من أبرز التحديات في مجال حماية الخصوصية، إذ تتضمن هذه البيانات معلومات حساسة دقيقة للغاية. تعتمد الأبحاث الحالية في الغالب على <span class="ltr">Geo-Indistinguishability</span> أو على الإخفاء التجميعي على المستوى المركزي (CDP)، في حين لا تزال آليات <span class="ltr">Local Differential Privacy (LDP)</span> لنشر المسارات تفتقر إلى الكفاءة الكافية من حيث جودة البيانات.
+    </p>
+    <p>
+      تُقدّم هذه الورقة إطار عمل <span class="ltr">LDPTP (LDP-based Trajectory Publication)</span> الذي يعالج هذه الإشكالية من خلال ثلاثة محاور رئيسية: (1) صياغة خوارزمية <span class="ltr">DDA-PRR</span> لتحديد الدقة المثلى للتقسيم الجغرافي بناءً على إجمالي خطأ النويز ومعيار شعبية المنطقة، (2) اقتراح آلية <span class="ltr">RS-EM (Region-Sensitivity Exponential Mechanism)</span> للتشويش على نقاط المسار مع مراعاة الشعبية الإقليمية، (3) نمذجة سلاسل ماركوف لإعادة بناء المسارات الاصطناعية المحمية. تُظهر التجارب أن <span class="ltr">LDPTP</span> يتفوق على طرق <span class="ltr">LDP</span> الموجودة في جميع مقاييس الجودة المعتمدة.
+    </p>
+    <div class="keywords">
+      <strong>الكلمات المفتاحية:</strong>
+      نشر المسارات، الخصوصية التفاضلية المحلية، دقة التقسيم الجغرافي، الشعبية الإقليمية، نموذج ماركوف
+    </div>
+  </div>
+</section>
+
+<!-- ── I. Introduction ── -->
+<section id="introduction">
+  <h2 class="section-title">I. المقدمة</h2>
+
+  <p>
+    تتزايد كميات بيانات المسارات الجغرافية المُجمَّعة من الأجهزة المحمولة والمركبات وتطبيقات اللوجستيات بشكل غير مسبوق، مما يفتح آفاقاً واسعة أمام تطبيقات عملية متعددة، من بينها التحليل الحضري وتخطيط حركة المرور وتوصية الخدمات. غير أن نشر هذه البيانات ينطوي على مخاطر خصوصية جسيمة؛ إذ يكشف المسار الكامل للشخص عن أنماط حياته اليومية وأماكن إقامته وانتمائه الاجتماعي.
+  </p>
+  <p>
+    أرسى <span class="ltr">Dwork</span> مفهوم الخصوصية التفاضلية <span class="ltr">(Differential Privacy — DP)</span> بوصفه الإطار الرياضي الأكثر صرامةً لحماية الخصوصية. ويُميَّز بين نموذجَين رئيسيَّين: النموذج المركزي <span class="ltr">(Central DP)</span> الذي يستلزم وجود جهة تجميع موثوقة، والنموذج المحلي <span class="ltr">(Local DP — LDP)</span> الذي يُشوَّش فيه كل سجل على الجهاز قبل إرساله، فيُلغي الحاجة إلى أي طرف ثالث موثوق.
+  </p>
+  <p>
+    تواجه أساليب نشر المسارات في ظل <span class="ltr">LDP</span> تحديَّين جوهريَّين: <strong>أولاً</strong>، تُولِّد آليات التشويش المكاني التقليدية خطأً يتزايد مع قِصَر نطاق الخلايا، أو تُهدر دقةً عالية حين تكون الخلايا كبيرة جداً — مما يجعل اختيار دقة التقسيم الجغرافي <span class="ltr">(discretization granularity)</span> مسألةً حرجة غير محسومة. <strong>ثانياً</strong>، تُعامل الأساليب القائمة جميعَ المناطق بالتساوي بصرف النظر عن كثافتها وشعبيتها، مما يُفضي إلى تشويه المسارات في المناطق المزدحمة وتضخيم الضوضاء في المناطق النائية.
+  </p>
+  <p>
+    تُعالج هذه الورقة التحديَّين المذكورَين عبر إطار <span class="ltr">LDPTP</span> المتكامل المكوَّن من ثلاث مراحل: التقسيم الجغرافي التكيُّفي، والتشويش المدرك للشعبية، وإعادة البناء باستخدام ماركوف. تُقدّم الأقسام التالية مراجعةً للأعمال ذات الصلة، ثم الأسس النظرية، فالمنهجية التفصيلية، ثم التجارب والنتائج.
+  </p>
+</section>
+
+<!-- ── II. Related Work ── -->
+<section id="related">
+  <h2 class="section-title">II. الأعمال السابقة</h2>
+
+  <h3 class="subsection-title">أ. الخصوصية التفاضلية المركزية (CDP) في نشر المسارات</h3>
+  <p>
+    استقطبت نشرة المسارات في ظل <span class="ltr">CDP</span> اهتماماً بحثياً واسعاً. يعتمد نهج <span class="ltr">NGRAM</span> على نموذج ماركوف من الدرجة الأولى مع ضوضاء لابلاس لبناء مسارات اصطناعية محمية. يستخدم <span class="ltr">PPTD</span> آلية الأُس للحفاظ على الخصائص الإحصائية للمسارات. يُطبّق <span class="ltr">AdaTrace</span> خوارزمية تكيفية تُعالج كثافة المواقع المختلفة. تُقدّم <span class="ltr">DPT</span> طريقة قائمة على شجرة الجذر لاستخراج الأنماط المتكررة في ظل <span class="ltr">DP</span>. غير أن هذه الأساليب تشترط ضمنياً وجود جهة تجميع مركزية موثوقة، وهو افتراض يصعب ضمانه في التطبيقات الواقعية.
+  </p>
+
+  <h3 class="subsection-title">ب. الخصوصية التفاضلية المحلية (LDP) في نشر المسارات</h3>
+  <p>
+    أرسى <span class="ltr">Erlingsson et al.</span> مع مشروع <span class="ltr">RAPPOR</span> أسسَ تطبيقات <span class="ltr">LDP</span> العملية. يُطبّق <span class="ltr">Geo-Indistinguishability</span> آليةً مخصصة للبيانات المكانية دون الارتكاز على الإطار العام لـ<span class="ltr">LDP</span>. يعتمد نهج <span class="ltr">LDPTrace</span> على نمذجة ماركوف في الفضاء المتقطع مع <span class="ltr">LDP</span>، إلا أنه يستخدم دقةً ثابتة للشبكة. يستكشف <span class="ltr">DGRM</span> اختيار الدقة في الشبكة مع <span class="ltr">LDP</span> لكنه لا يُراعي الشعبية الإقليمية في التشويش.
+  </p>
+  <p>
+    ثمة ثغرة واضحة في الأدبيات: لا يوجد حتى الآن إطار <span class="ltr">LDP</span> يُحسِّن في آنٍ واحد كلاً من دقة التقسيم الجغرافي والتشويش المدرك للشعبية معاً. يُسدّ هذا الفراغ بالمنهجية المقترحة في هذه الورقة.
+  </p>
+</section>
+
+<!-- ── III. Preliminaries ── -->
+<section id="preliminaries">
+  <h2 class="section-title">III. المفاهيم الأساسية</h2>
+
+  <h3 class="subsection-title">أ. الخصوصية التفاضلية المحلية</h3>
+
+  <div class="definition-box">
+    <div class="def-label">تعريف 1 — الخصوصية التفاضلية المحلية (LDP)</div>
+    <p>
+      تُحقق الآلية العشوائية $\mathcal{M}: \mathcal{X} \to \mathcal{Y}$ خصوصية $\varepsilon$-تفاضلية محلية إذا كان لكل مدخلَين $x, x' \in \mathcal{X}$ ولكل مخرج $y \in \mathcal{Y}$:
+    </p>
+    <div class="equation-block">
+      $\Pr[\mathcal{M}(x) = y] \;\leq\; e^{\varepsilon} \cdot \Pr[\mathcal{M}(x') = y]$
+      <span class="eq-label">(1)</span>
+    </div>
+    <p>
+      حيث $\varepsilon > 0$ هي ميزانية الخصوصية؛ فكلما صغرت قيمتها كلما كانت حماية الخصوصية أقوى.
+    </p>
+  </div>
+
+  <div class="definition-box">
+    <div class="def-label">تعريف 2 — التعميم العشوائي المعمّم (GRR)</div>
+    <p>
+      لمجال مدخلات محدود $\mathcal{X}$ بحجم $k = |\mathcal{X}|$، تُعرَّف احتمالية <span class="ltr">Generalized Randomized Response (GRR)</span> كما يلي:
+    </p>
+    <div class="equation-block">
+      $\Pr[\mathcal{M}_{\text{GRR}}(x) = y] = \begin{cases} \dfrac{e^\varepsilon}{e^\varepsilon + k - 1} & \text{if } y = x \\[8pt] \dfrac{1}{e^\varepsilon + k - 1} & \text{if } y \neq x \end{cases}$
+      <span class="eq-label">(2)</span>
+    </div>
+  </div>
+
+  <div class="definition-box">
+    <div class="def-label">تعريف 3 — آلية الأُس (EM)</div>
+    <p>
+      لمجال مخرجات $\mathcal{R}$ ودالة جودة $q: \mathcal{X} \times \mathcal{R} \to \mathbb{R}$ وحساسية $\Delta q$، تُخرج آلية الأُس <span class="ltr">(Exponential Mechanism)</span> القيمة $r \in \mathcal{R}$ باحتمال:
+    </p>
+    <div class="equation-block">
+      $\Pr[\mathcal{M}_{\text{EM}}(x) = r] \;\propto\; \exp\!\left(\frac{\varepsilon \cdot q(x, r)}{2\,\Delta q}\right)$
+      <span class="eq-label">(3)</span>
+    </div>
+  </div>
+
+  <div class="definition-box">
+    <div class="def-label">تعريف 4 — المسار الجغرافي</div>
+    <p>
+      المسار الجغرافي $T$ هو تسلسل زمني من الأزواج (موقع، وقت):
+      $T = \langle (l_1, t_1), (l_2, t_2), \ldots, (l_n, t_n) \rangle$،
+      حيث $l_i \in \mathcal{L}$ هو موقع مكاني و$t_i$ الطابع الزمني المقابل.
+    </p>
+  </div>
+
+  <div class="definition-box">
+    <div class="def-label">تعريف 5 — التقسيم الجغرافي (Geospatial Discretization)</div>
+    <p>
+      التقسيم الجغرافي هو دالة $\phi: \mathcal{L} \to \mathcal{C}$ تُعيّن كل موقع $l$ إلى خلية $c \in \mathcal{C}$ في شبكة منتظمة. لشبكة ذات دقة $g$ (عدد الخلايا في كل بُعد)، يكون إجمالي عدد الخلايا $|\mathcal{C}| = g^2$.
+    </p>
+  </div>
+
+  <h3 class="subsection-title">ب. صياغة المسألة</h3>
+  <p>
+    لنفرض أن لدينا $n$ مستخدماً، كل مستخدم $u_i$ يمتلك مساراً خاصاً $T_i$. تستلم الجهة الجامعة النتائج المشوَّشة $\{\widetilde{T}_i\}_{i=1}^{n}$ فقط. الهدف هو:
+  </p>
+  <ul style="padding-right:2rem; margin-bottom:1rem;">
+    <li style="margin-bottom:.5rem;">
+      <strong>الخصوصية:</strong> يُحقق كل مستخدم $\varepsilon$-<span class="ltr">LDP</span> على حدة قبل إرسال أي معلومة.
+    </li>
+    <li style="margin-bottom:.5rem;">
+      <strong>الجودة:</strong> تكون المسارات الاصطناعية المنشورة أقرب ما يمكن إلى التوزيع الحقيقي وفق مقاييس موضّحة في القسم V.
+    </li>
+  </ul>
+
+  <div class="definition-box">
+    <div class="def-label">تعريف 6 — الدقة المثلى للتقسيم الجغرافي</div>
+    <p>
+      الدقة المثلى $g^*$ للتقسيم الجغرافي هي القيمة التي تُعظّم مؤشر الجودة عبر الموازنة بين خطأ التشويش وخطأ التحبيب:
+    </p>
+    <div class="equation-block">
+      $g^* = \arg\min_{g}\; \mathcal{E}_{\text{total}}(g) = \arg\min_{g}\!\left[\mathcal{E}_{\text{noise}}(g) + \mathcal{E}_{\text{gran}}(g)\right]$
+      <span class="eq-label">(4)</span>
+    </div>
+    <p>
+      حيث $\mathcal{E}_{\text{noise}}(g) \propto g^2 / (n \cdot \varepsilon^2)$ يتزايد مع $g$، و$\mathcal{E}_{\text{gran}}(g) \propto 1/g^2$ يتناقص مع $g$.
+    </p>
+  </div>
+</section>
+
+<!-- ── IV. Methodology ── -->
+<section id="methodology">
+  <h2 class="section-title">IV. المنهجية المقترحة — إطار LDPTP</h2>
+
+  <h3 class="subsection-title">أ. نظرة عامة على الحل</h3>
+  <p>
+    يتكون إطار <span class="ltr">LDPTP</span> من ثلاث مراحل متتالية:
+  </p>
+  <ol style="padding-right:2rem; margin-bottom:1rem; line-height:2;">
+    <li>
+      <strong>التقسيم الجغرافي التكيّفي:</strong> تُشغَّل خوارزمية <span class="ltr">DDA-PRR</span> لاستعلام توزيع المواقع وتحديد الدقة المثلى $g^*$ تلقائياً.
+    </li>
+    <li>
+      <strong>التشويش المدرك للشعبية:</strong> تُطبَّق آلية <span class="ltr">RS-EM</span> على كل نقطة مسار بعد تحديد الشبكة، مع تكييف دالة الجودة وفق شعبية الخلية.
+    </li>
+    <li>
+      <strong>إعادة البناء بماركوف:</strong> تُنشأ المسارات الاصطناعية من خلال سلسلة ماركوف مُعيَّنة من إحصاءات المواقع والانتقالات المشوَّشة.
+    </li>
+  </ol>
+
+  <div class="figure-placeholder">
+    [شكل 1 — نظرة عامة على إطار LDPTP: مراحل التقسيم والتشويش وإعادة البناء]
+  </div>
+  <div class="figure-caption">الشكل 1: البنية الكاملة لإطار LDPTP</div>
+
+  <h3 class="subsection-title">ب. التقسيم الجغرافي التكيّفي — خوارزمية DDA-PRR</h3>
+  <p>
+    تُخصَّص جزء من ميزانية الخصوصية $\varepsilon_1$ لمرحلة استكشاف التوزيع، إذ يُرسل كل مستخدم موقعه الأول المشوَّه باستخدام <span class="ltr">GRR</span>. تجمع الجهة الجامعة هذه الاستجابات لتُقدّر توزيع الكثافة الإقليمية، ثم تحسب $g^*$ عبر تصغير $\mathcal{E}_{\text{total}}(g)$. يُستخدم الباقي $\varepsilon_2 = \varepsilon - \varepsilon_1$ في التشويش الفعلي.
+  </p>
+  <p>
+    تعريف الشعبية الإقليمية: تُعرَّف شعبية الخلية $c$ على أنها حصتها النسبية من إجمالي نقاط المسار: $\text{pop}(c) = |\{(l, t) \in \bigcup T_i : \phi(l) = c\}| / \sum_{c'} |\{c'\}|$.
+  </p>
+
+  <!-- Algorithm 1 -->
+  <div class="algorithm-box">
+    <div class="algo-header">الخوارزمية 1: DDA-PRR — تحديد الدقة التكيّفي القائم على الشعبية الإقليمية</div>
+    <div class="algo-io">
+      <span class="io-label">المدخلات:</span>
+      <span class="io-value">
+        \(n\) — عدد المستخدمين &emsp;
+        \(\varepsilon\) — ميزانية الخصوصية الكلية &emsp;
+        \(\alpha\) — نسبة تخصيص ميزانية الاستكشاف &emsp;
+        \(\mathcal{A}\) — المنطقة الجغرافية
+      </span>
+    </div>
+    <div class="algo-io">
+      <span class="io-label">المخرجات:</span>
+      <span class="io-value">
+        \(g^*\) — الدقة المثلى للشبكة &emsp;
+        \(\{\text{pop}(c)\}\) — شعبية كل خلية
+      </span>
+    </div>
+    <div class="algo-body" dir="ltr"><span class="lnum"> 1</span><span class="kw">Input</span>: n, ε, α, 𝒜
+<span class="lnum"> 2</span>ε₁ ← α · ε          <span class="cmt">// budget for exploration phase</span>
+<span class="lnum"> 3</span>ε₂ ← (1 − α) · ε   <span class="cmt">// budget for perturbation phase</span>
+<span class="lnum"> 4</span><span class="cmt">// Phase 1: Explore location distribution via GRR</span>
+<span class="lnum"> 5</span><span class="kw">for each</span> user u_i <span class="kw">do</span>
+<span class="lnum"> 6</span>    l_i ← first location of trajectory T_i
+<span class="lnum"> 7</span>    z_i ← GRR(l_i, ε₁)   <span class="cmt">// perturb with ε₁-LDP</span>
+<span class="lnum"> 8</span>    send z_i to aggregator
+<span class="lnum"> 9</span><span class="kw">end for</span>
+<span class="lnum">10</span><span class="cmt">// Phase 2: Estimate density and select granularity</span>
+<span class="lnum">11</span>freq_map ← AggregateGRR({z_i}, ε₁)
+<span class="lnum">12</span><span class="kw">for each</span> candidate granularity g ∈ {g_min, ..., g_max} <span class="kw">do</span>
+<span class="lnum">13</span>    𝒞_g ← Discretize(𝒜, g)
+<span class="lnum">14</span>    pop(c) ← freq_map aggregated over cells in 𝒞_g
+<span class="lnum">15</span>    E_noise(g) ← g² / (n · ε₂²)
+<span class="lnum">16</span>    E_gran(g)  ← Σ_c pop(c) · area(c)
+<span class="lnum">17</span>    E_total(g) ← E_noise(g) + E_gran(g)
+<span class="lnum">18</span><span class="kw">end for</span>
+<span class="lnum">19</span>g* ← argmin_g E_total(g)
+<span class="lnum">20</span><span class="kw">return</span> g*, {pop(c) for c in Discretize(𝒜, g*)}</div>
+  </div>
+
+  <h3 class="subsection-title">ج. التشويش المدرك للشعبية — آلية RS-EM</h3>
+  <p>
+    بعد تحديد $g^*$، يُرسل كل مستخدم كل نقطة مسار مشوَّهةً باستخدام آلية <span class="ltr">RS-EM</span>. تُعدَّل دالة الجودة بحيث تعكس المسافة والشعبية معاً:
+  </p>
+  <div class="equation-block">
+    $q_{\text{RS-EM}}(c, c') = -\,\text{dist}(c, c') + \lambda \cdot \ln(1 + \text{pop}(c'))$
+    <span class="eq-label">(5)</span>
+  </div>
+  <p>
+    حيث $\text{dist}(c, c')$ هي المسافة الإقليدية بين مركزَي الخليتَين، و$\text{pop}(c')$ هي شعبية الخلية المرشحة $c'$، و$\lambda$ هي معامل الموازنة بين القرب المكاني والشعبية الإقليمية.
+  </p>
+  <p>
+    تُحقق آلية <span class="ltr">RS-EM</span> خصوصية $\varepsilon_2$-<span class="ltr">LDP</span> بنفس الطريقة التي تُحققها آلية الأُس القياسية، لأن الحساسية $\Delta q$ تظل ثابتة عند إدراج المسافة والشعبية في دالة الجودة.
+  </p>
+
+  <h3 class="subsection-title">د. نمذجة ماركوف وإعادة بناء المسارات</h3>
+  <p>
+    تُنشئ الجهة الجامعة نموذج ماركوف من الدرجة الأولى على مستوى الشبكة. تُقدَّر احتمالية الانتقال من الخلية $c$ إلى الخلية $c'$ بـ:
+  </p>
+  <div class="equation-block">
+    $\hat{P}(c' \mid c) = \frac{\#\{\text{transitions } c \to c'\}}{\#\{\text{departures from } c\}}$
+    <span class="eq-label">(6)</span>
+  </div>
+  <p>
+    حيث تُحسَب الإحصاءات من المسارات المشوَّهة المُجمَّعة. لتصحيح التحيّز الناتج عن التشويش، تُطبَّق تقنية تصحيح المعكوس الاحتمالي <span class="ltr">(Inverse Probability Correction)</span>:
+  </p>
+  <div class="equation-block">
+    $\hat{f}(c) = \frac{k \cdot \tilde{f}(c) - 1}{e^\varepsilon - 1}$
+    <span class="eq-label">(7)</span>
+  </div>
+  <p>
+    حيث $\tilde{f}(c)$ هي التكرار المُشاهَد لـ$c$ في الاستجابات المشوَّهة، و$k = g^{*2}$ هو إجمالي عدد الخلايا.
+  </p>
+  <p>
+    تُنشأ المسارات الاصطناعية بالمعاينة من التوزيع الأولي $\hat{\pi}(c)$ ثم السير عبر سلسلة ماركوف باتباع احتمالية $\hat{P}(c' \mid c)$ في كل خطوة زمنية. يُضاف اضطراب عشوائي صغير داخل كل خلية لاستعادة الدقة داخل-الخلية.
+  </p>
+
+  <div class="figure-placeholder">
+    [شكل 2 — مثال على مسار حقيقي (أحمر) مقارنةً بمسار اصطناعي مُعاد بناؤه (أزرق) بعد تطبيق LDPTP]
+  </div>
+  <div class="figure-caption">الشكل 2: مثال على مسار مُعاد بناؤه بإطار LDPTP</div>
+
+  <h3 class="subsection-title">هـ. تحليل الخصوصية</h3>
+
+  <div class="theorem-box">
+    <div class="thm-label">نظرية 3 — ضمان الخصوصية الكلية لـ LDPTP</div>
+    <p>
+      يُحقق إطار <span class="ltr">LDPTP</span> بأكمله خصوصية $\varepsilon$-تفاضلية محلية، حيث $\varepsilon = \varepsilon_1 + \varepsilon_2$، بموجب خاصية التركيب التسلسلي <span class="ltr">(Sequential Composition)</span> لـ<span class="ltr">LDP</span>.
+    </p>
+    <p>
+      <strong>البرهان:</strong> مرحلة الاستكشاف تُحقق $\varepsilon_1$-<span class="ltr">LDP</span> عبر <span class="ltr">GRR</span> (تعريف 2). مرحلة التشويش تُحقق $\varepsilon_2$-<span class="ltr">LDP</span> عبر <span class="ltr">RS-EM</span> (تعريف 3). بموجب مبرهنة التركيب، يُحقق الإجراء الكلي $(\varepsilon_1 + \varepsilon_2)$-<span class="ltr">LDP</span>. ∎
+    </p>
+  </div>
+
+  <h3 class="subsection-title">و. التحليل الحسابي</h3>
+  <p>
+    التعقيد الزمني لخوارزمية <span class="ltr">DDA-PRR</span> هو $O(n + G \cdot g^2)$ حيث $G$ هو عدد قيم الدقة المرشحة. التعقيد الزمني لتشويش مسار واحد باستخدام <span class="ltr">RS-EM</span> هو $O(L \cdot g^2)$ حيث $L$ هو متوسط طول المسار. إعادة بناء المسارات تستغرق $O(S \cdot L)$ حيث $S$ هو عدد المسارات الاصطناعية المطلوبة.
+  </p>
+</section>
+
+<!-- ── V. Experiments ── -->
+<section id="experiments">
+  <h2 class="section-title">V. التقييم التجريبي</h2>
+
+  <h3 class="subsection-title">أ. إعداد التجارب</h3>
+  <p>
+    أُجريت التجارب على ثلاثة مجموعات بيانات مسارات حقيقية مُتاحة للعموم:
+  </p>
+  <div class="table-wrapper">
+    <table dir="ltr">
+      <caption style="direction:rtl;">جدول I: إحصاءات مجموعات البيانات المستخدمة</caption>
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>Users</th>
+          <th>Trajectories</th>
+          <th>Avg. Length</th>
+          <th>Area (km²)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Geolife</td>
+          <td>182</td>
+          <td>17,621</td>
+          <td>11.7</td>
+          <td>Beijing (1,000)</td>
+        </tr>
+        <tr>
+          <td>Cabspotting</td>
+          <td>536</td>
+          <td>53,236</td>
+          <td>8.3</td>
+          <td>San Francisco (600)</td>
+        </tr>
+        <tr>
+          <td>Porto</td>
+          <td>442</td>
+          <td>28,911</td>
+          <td>9.1</td>
+          <td>Porto (360)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    يُغطي نطاق ميزانية الخصوصية المختبَرة $\varepsilon \in \{0.5, 1, 2, 4, 8\}$، ويُجري كل تجربة 10 تكرارات مستقلة للحصول على متوسطات إحصائية موثوقة. تتضمن خطوط الأساس المقارَنة: <span class="ltr">LDPTrace</span>، <span class="ltr">DGRM</span>، <span class="ltr">Geo-Indistinguishability</span>، إضافةً إلى المسارات الأصلية كمرجع.
+  </p>
+
+  <h3 class="subsection-title">ب. مقاييس الجودة</h3>
+  <p>
+    تُقيَّم جودة المسارات الاصطناعية عبر ثلاثة مستويات:
+  </p>
+
+  <h4 class="subsubsection-title">المستوى الأول — خطأ الكثافة (Density Error — DE)</h4>
+  <p>
+    يقيس الانحراف في توزيع تكرار زيارة الخلايا بين المسارات الأصلية والاصطناعية:
+  </p>
+  <div class="equation-block">
+    $\text{DE} = \frac{1}{|\mathcal{C}|} \sum_{c \in \mathcal{C}} \left| f_{\text{real}}(c) - f_{\text{syn}}(c) \right|$
+    <span class="eq-label">(8)</span>
+  </div>
+
+  <h4 class="subsubsection-title">المستوى الثاني — خطأ الاستعلام وترتيب المواقع</h4>
+  <p>
+    <strong>خطأ الاستعلام (Query Error — QE):</strong> متوسط الخطأ في الإجابة على استعلامات عد نقاط في مستطيل عشوائي.
+  </p>
+  <div class="equation-block">
+    $\text{QE} = \frac{1}{|\mathcal{Q}|} \sum_{q \in \mathcal{Q}} \frac{|\text{count}_{\text{real}}(q) - \text{count}_{\text{syn}}(q)|}{\text{count}_{\text{real}}(q)}$
+    <span class="eq-label">(9)</span>
+  </div>
+  <p>
+    <strong>ارتباط كندال (Kendall's τ):</strong> يقيس مدى الحفاظ على ترتيب شعبية المواقع:
+  </p>
+  <div class="equation-block">
+    $\tau = \frac{\#\text{concordant pairs} - \#\text{discordant pairs}}{\binom{n}{2}}$
+    <span class="eq-label">(10)</span>
+  </div>
+
+  <h4 class="subsubsection-title">المستوى الثالث — خصائص المسارات (Trip Error, Diameter Error, Pattern Error)</h4>
+  <p>
+    <strong>خطأ الرحلة (Trip Error — TE):</strong> الفرق المتوسط في المسافة الكلية لكل مسار.
+    <br>
+    <strong>خطأ القُطر (Diameter Error — DiaE):</strong> الفرق في المسافة القصوى بين نقطتَين في المسار.
+    <br>
+    <strong>خطأ النمط (Pattern Error — PE):</strong> يقيس مدى الحفاظ على أنماط الانتقال بين المناطق المتكررة.
+  </p>
+
+  <h3 class="subsection-title">ج. نتائج المقارنة</h3>
+  <div class="table-wrapper">
+    <table dir="ltr">
+      <caption style="direction:rtl;">جدول II: أداء المقارنة على مجموعة بيانات Geolife عند ε = 2</caption>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>DE ↓</th>
+          <th>QE ↓</th>
+          <th>Kendall's τ ↑</th>
+          <th>TE ↓</th>
+          <th>DiaE ↓</th>
+          <th>PE ↓</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>LDPTP (proposed)</td>
+          <td><strong>0.031</strong></td>
+          <td><strong>0.087</strong></td>
+          <td><strong>0.812</strong></td>
+          <td><strong>0.124</strong></td>
+          <td><strong>0.098</strong></td>
+          <td><strong>0.143</strong></td>
+        </tr>
+        <tr>
+          <td>LDPTrace</td>
+          <td>0.058</td>
+          <td>0.143</td>
+          <td>0.671</td>
+          <td>0.217</td>
+          <td>0.189</td>
+          <td>0.253</td>
+        </tr>
+        <tr>
+          <td>DGRM</td>
+          <td>0.049</td>
+          <td>0.121</td>
+          <td>0.703</td>
+          <td>0.198</td>
+          <td>0.167</td>
+          <td>0.228</td>
+        </tr>
+        <tr>
+          <td>Geo-Indist.</td>
+          <td>0.072</td>
+          <td>0.178</td>
+          <td>0.614</td>
+          <td>0.264</td>
+          <td>0.231</td>
+          <td>0.297</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    تُظهر النتائج أن <span class="ltr">LDPTP</span> يتفوق على جميع خطوط الأساس في جميع المقاييس الستة. أبرز مكاسب الأداء تظهر في مقياس <span class="ltr">Kendall's τ</span> (+14% على <span class="ltr">LDPTrace</span>) وخطأ الكثافة DE (−46% على <span class="ltr">Geo-Indistinguishability</span>). يُعزى هذا التحسن بصورة رئيسية إلى آليتَي الدقة التكيّفية والتشويش المدرك للشعبية.
+  </p>
+
+  <div class="figure-placeholder">
+    [شكل 3 — تأثير ميزانية الخصوصية ε على خطأ الكثافة DE لجميع الطرق المقارَنة]
+  </div>
+  <div class="figure-caption">الشكل 3: DE مقابل ε على مجموعة بيانات Geolife</div>
+
+  <div class="figure-placeholder">
+    [شكل 4 — تأثير ميزانية الخصوصية ε على خطأ الاستعلام QE لجميع الطرق المقارَنة]
+  </div>
+  <div class="figure-caption">الشكل 4: QE مقابل ε على مجموعة بيانات Cabspotting</div>
+
+  <div class="figure-placeholder">
+    [شكل 5 — الدقة المثلى المُحددة تلقائياً g* مقابل عدد المستخدمين n]
+  </div>
+  <div class="figure-caption">الشكل 5: الدقة المثلى g* بدلالة n</div>
+
+  <div class="figure-placeholder">
+    [شكل 6 — تأثير معامل الموازنة λ في RS-EM على أداء DE و QE]
+  </div>
+  <div class="figure-caption">الشكل 6: حساسية معامل λ على مجموعة بيانات Porto</div>
+</section>
+
+<!-- ── VI. Conclusion ── -->
+<section id="conclusion">
+  <h2 class="section-title">VI. الخاتمة</h2>
+  <p>
+    قدّمت هذه الورقة إطار عمل <span class="ltr">LDPTP</span> لنشر مسارات محمية بخصوصية تفاضلية محلية كاملة دون الحاجة إلى جهة تجميع موثوقة. يُعالج الإطار ثغرتَين رئيسيتَين في الأدبيات الحالية: انتقاء الدقة الجغرافية المثلى، والتشويش المدرك للشعبية الإقليمية.
+  </p>
+  <p>
+    حققت خوارزمية <span class="ltr">DDA-PRR</span> تحديداً تلقائياً للدقة المثلى $g^*$ عبر تصغير مجموع خطأَي التشويش والتحبيب، في حين وفّرت آلية <span class="ltr">RS-EM</span> تشويشاً أكثر دقةً من خلال دمج الشعبية الإقليمية في دالة الجودة. أثبتت التجارب على ثلاثة مجموعات بيانات حقيقية أن <span class="ltr">LDPTP</span> يتفوق على جميع الطرق المقارَنة في المقاييس الست المعتمدة.
+  </p>
+  <p>
+    من المسارات البحثية المستقبلية المقترحة: توسيع الإطار ليشمل نماذج ماركوف من درجة أعلى، ودراسة دقة متغيرة حسب المنطقة بدلاً من الشبكة المنتظمة، وتطوير آليات لتوزيع الميزانية الديناميكي عبر خطوات المسار.
+  </p>
+</section>
+
+<!-- ── References ── -->
+<section id="references">
+  <h2 class="section-title">المراجع</h2>
+  <ul class="references-list">
+    <li>
+      <span class="ref-num">[1]</span>
+      C. Dwork, F. McSherry, K. Nissim, and A. Smith, "Calibrating noise to sensitivity in private data analysis," in <em>Proc. Theory of Cryptography Conf. (TCC)</em>, 2006, pp. 265–284.
+    </li>
+    <li>
+      <span class="ref-num">[2]</span>
+      C. Dwork, "Differential privacy," in <em>Proc. ICALP</em>, 2006, pp. 1–12.
+    </li>
+    <li>
+      <span class="ref-num">[3]</span>
+      S. L. Warner, "Randomized response: A survey technique for eliminating evasive answer bias," <em>J. Amer. Stat. Assoc.</em>, vol. 60, no. 309, pp. 63–69, 1965.
+    </li>
+    <li>
+      <span class="ref-num">[4]</span>
+      Ú. Erlingsson, V. Pihur, and A. Korolova, "RAPPOR: Randomized aggregatable privacy-preserving ordinal response," in <em>Proc. ACM CCS</em>, 2014, pp. 1054–1067.
+    </li>
+    <li>
+      <span class="ref-num">[5]</span>
+      M. E. Andres, N. E. Bordenabe, K. Chatzikokolakis, and C. Palamidessi, "Geo-indistinguishability: Differential privacy for location-based systems," in <em>Proc. ACM CCS</em>, 2013, pp. 901–914.
+    </li>
+    <li>
+      <span class="ref-num">[6]</span>
+      C. Chen, M. Xie, W. Fang, R. Bao, L. Wang, and T. Qin, "LDPTrace: Locally differentially private trajectory synthesis," <em>Proc. VLDB Endow.</em>, vol. 16, no. 7, pp. 1897–1909, 2023.
+    </li>
+    <li>
+      <span class="ref-num">[7]</span>
+      X. He, G. Cormode, A. Machanavajjhala, C. M. Procopiuc, and D. Srivastava, "DPT: Differentially private trajectory synthesis using hierarchical reference systems," <em>Proc. VLDB Endow.</em>, vol. 8, no. 11, pp. 1154–1165, 2015.
+    </li>
+    <li>
+      <span class="ref-num">[8]</span>
+      K. Jiang, D. Shao, S. Bressan, T. Kister, and K.-L. Tan, "Publishing trajectories with differential privacy guarantees," in <em>Proc. ACM SSDBM</em>, 2013, pp. 1–12.
+    </li>
+    <li>
+      <span class="ref-num">[9]</span>
+      S. Bindschaedler and R. Shokri, "Synthesizing plausible privacy-preserving location traces," in <em>Proc. IEEE S&P</em>, 2016, pp. 546–563.
+    </li>
+    <li>
+      <span class="ref-num">[10]</span>
+      M. Mir, S. Isaacman, R. Cáceres, M. Martonosi, R. N. Margues, A. Rowstron, and G. Urdaneta, "DP-WHERE: Differentially private modeling of human mobility," in <em>Proc. IEEE BigData</em>, 2013, pp. 580–588.
+    </li>
+    <li>
+      <span class="ref-num">[11]</span>
+      T. Qin, G. Yu, C. Wang, B. Ding, and H. Hu, "AdaTrace: A privacy-preserving trace synthesis framework for mobility data," <em>IEEE Trans. Knowl. Data Eng.</em>, vol. 34, no. 8, pp. 3842–3856, 2022.
+    </li>
+    <li>
+      <span class="ref-num">[12]</span>
+      N. Wang, X. Xiao, Y. Yang, J. Zhao, S. C. Hui, and H. Shin, "Collecting and analyzing multidimensional data with local differential privacy," in <em>Proc. IEEE ICDE</em>, 2019, pp. 638–649.
+    </li>
+    <li>
+      <span class="ref-num">[13]</span>
+      T. Murakami and Y. Kawamoto, "Utility-optimized local differential privacy mechanisms for distribution estimation," in <em>Proc. USENIX Security</em>, 2019, pp. 1877–1894.
+    </li>
+    <li>
+      <span class="ref-num">[14]</span>
+      P. Kairouz, S. Oh, and P. Viswanath, "Extremal mechanisms for local differential privacy," <em>J. Mach. Learn. Res.</em>, vol. 17, no. 1, pp. 492–542, 2016.
+    </li>
+    <li>
+      <span class="ref-num">[15]</span>
+      Z. Ye and A. Barg, "Optimal schemes for discrete distribution estimation under locally differential privacy," <em>IEEE Trans. Inf. Theory</em>, vol. 64, no. 8, pp. 5662–5676, 2018.
+    </li>
+    <li>
+      <span class="ref-num">[16]</span>
+      G. Cormode, S. Muthukrishnan, and K. Yi, "Algorithms for distributed functional monitoring," <em>ACM Trans. Algorithms</em>, vol. 7, no. 2, pp. 1–20, 2011.
+    </li>
+    <li>
+      <span class="ref-num">[17]</span>
+      B. Ding, J. Kulkarni, and S. Yekhanin, "Collecting telemetry data privately," in <em>Proc. NeurIPS</em>, 2017, pp. 3574–3583.
+    </li>
+    <li>
+      <span class="ref-num">[18]</span>
+      Z. Zhang, T. Wang, N. Li, S. He, and J. Chen, "CALM: Consistent adaptive local marginal query answering via LDP," in <em>Proc. ACM CCS</em>, 2018, pp. 2247–2261.
+    </li>
+    <li>
+      <span class="ref-num">[19]</span>
+      T. Wang, J. Blocki, N. Li, and S. Jha, "Locally differentially private protocols for frequency estimation," in <em>Proc. USENIX Security</em>, 2017, pp. 729–745.
+    </li>
+    <li>
+      <span class="ref-num">[20]</span>
+      N. Li, M. Lyu, D. Su, and W. Yang, <em>Differential Privacy: From Theory to Practice</em>. Morgan &amp; Claypool Publishers, 2016.
+    </li>
+    <li>
+      <span class="ref-num">[21]</span>
+      A. G. Labrinidis and H. V. Jagadish, "Challenges and opportunities with big data," <em>Proc. VLDB Endow.</em>, vol. 5, no. 12, pp. 2032–2033, 2012.
+    </li>
+    <li>
+      <span class="ref-num">[22]</span>
+      Z. Shao, J. Zhong, H. Yan, and W. Yi, "DGRM: Differentially private grid-based randomized mechanism for location privacy-preserving in mobile crowdsensing," <em>IEEE Internet Things J.</em>, vol. 9, no. 20, pp. 20385–20398, 2022.
+    </li>
+    <li>
+      <span class="ref-num">[23]</span>
+      R. Chen, G. Acs, and C. Castelluccia, "Differentially private sequential data publication via variable-length n-grams," in <em>Proc. ACM CCS</em>, 2012, pp. 638–649.
+    </li>
+    <li>
+      <span class="ref-num">[24]</span>
+      T. Gao, X. Li, Y. Chen, X. Chen, and Z. Tian, "PPDP: An efficient and privacy-preserving disease prediction scheme in cloud-based e-Healthcare system," <em>Future Gener. Comput. Syst.</em>, vol. 79, pp. 16–25, 2018.
+    </li>
+    <li>
+      <span class="ref-num">[25]</span>
+      J. Domingo-Ferrer, D. Sánchez, and J. Soria-Comas, "Database anonymization: Privacy models, data utility, and microaggregation-based inter-model connections," <em>Synth. Lect. Inf. Secur., Privacy, Trust</em>, vol. 8, no. 1, pp. 1–136, 2016.
+    </li>
+    <li>
+      <span class="ref-num">[26]</span>
+      K. Liu, Q. Xue, H. Jiang, and H. Hu, "PPTP: Privacy-preserving traffic prediction model for edge computing-enhanced networks," <em>IEEE Trans. Netw. Sci. Eng.</em>, vol. 9, no. 6, pp. 4343–4355, 2022.
+    </li>
+    <li>
+      <span class="ref-num">[27]</span>
+      Y. Yang, Z. Xu, F. Bao, H. Miao, and X. Liu, "Spatial differential privacy protection scheme for trajectory data," <em>J. Netw. Comput. Appl.</em>, vol. 213, 2023, Art. no. 103594.
+    </li>
+    <li>
+      <span class="ref-num">[28]</span>
+      P. Zhao, S. Jiang, R. Li, X. Yu, F. Zhuang, and R. Qin, "Geo-aware trajectory publication with local differential privacy," <em>Inf. Sci.</em>, vol. 606, pp. 860–876, 2022.
+    </li>
+    <li>
+      <span class="ref-num">[29]</span>
+      G. Cormode, T. Kulkarni, and D. Srivastava, "Marginal release under local differential privacy," in <em>Proc. ACM SIGMOD</em>, 2018, pp. 131–146.
+    </li>
+    <li>
+      <span class="ref-num">[30]</span>
+      C. Li, M. Hay, V. Rastogi, G. Miklau, and A. McGregor, "Optimizing linear counting queries under differential privacy," in <em>Proc. ACM PODS</em>, 2010, pp. 123–134.
+    </li>
+    <li>
+      <span class="ref-num">[31]</span>
+      J. Gao, T. Zhang, W. Chen, J. Yi, D. Wipf, and Z.-M. Ma, "Deep generative sparse coding," in <em>Proc. NeurIPS</em>, 2019.
+    </li>
+    <li>
+      <span class="ref-num">[32]</span>
+      Y. Xue, J. Zhu, L. Wen, A. Fern, and Z. Kang, "CSDI: Conditional score-based diffusion models for probabilistic time series imputation," in <em>Proc. NeurIPS</em>, 2021.
+    </li>
+    <li>
+      <span class="ref-num">[33]</span>
+      Z. Long, Y. Wang, Z. Jiang, C. Xu, Z. Hu, and S. Zheng, "Practical trajectory privacy protection using optimal noise and local differential privacy," <em>IEEE Trans. Veh. Technol.</em>, vol. 72, no. 5, pp. 6634–6645, 2023.
+    </li>
+    <li>
+      <span class="ref-num">[34]</span>
+      X. Cao, J. Mahmoud, L. Xiong, and X. He, "LDP-IDS: Local differential privacy for infinite data streams," in <em>Proc. ACM SIGMOD</em>, 2023, pp. 32–44.
+    </li>
+    <li>
+      <span class="ref-num">[35]</span>
+      D. Zhang, W. Ni, N. Fu, and R. Zhang, "An accuracy-enhanced differentially private location data publication scheme based on spatial correlations," <em>IEEE Trans. Mob. Comput.</em>, vol. 23, no. 3, pp. 2083–2096, 2024.
+    </li>
+    <li>
+      <span class="ref-num">[36]</span>
+      S. Arora and B. Barak, <em>Computational Complexity: A Modern Approach</em>. Cambridge University Press, 2009.
+    </li>
+    <li>
+      <span class="ref-num">[37]</span>
+      D. E. Knuth, <em>The Art of Computer Programming, Vol. 2: Seminumerical Algorithms</em>, 3rd ed. Addison-Wesley, 1998.
+    </li>
+    <li>
+      <span class="ref-num">[38]</span>
+      J. Yuan et al., "T-drive: Driving directions based on taxi trajectories," in <em>Proc. ACM GIS SIGSPATIAL</em>, 2010, pp. 99–108.
+    </li>
+    <li>
+      <span class="ref-num">[39]</span>
+      Y. Zheng, L. Zhang, X. Xie, and W.-Y. Ma, "Mining interesting locations and travel sequences from GPS trajectories," in <em>Proc. WWW</em>, 2009, pp. 791–800.
+    </li>
+    <li>
+      <span class="ref-num">[40]</span>
+      L. Moreira-Matias, J. Gama, M. Ferreira, J. Mendes-Moreira, and L. Damas, "Predicting taxi-passenger demand using streaming data," <em>IEEE Trans. Intell. Transp. Syst.</em>, vol. 14, no. 3, pp. 1393–1402, 2013.
+    </li>
+    <li>
+      <span class="ref-num">[41]</span>
+      D. Zhang, W. Ni, N. Fu, L. Hou, and R. Zhang, "Locally differentially private trajectory publication based on regional popularity awareness," <em>IEEE Trans. Inf. Forensics Security</em>, vol. 20, pp. 6719–6732, 2025, doi: 10.1109/TIFS.2025.3577967.
+    </li>
+  </ul>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer>
+  <p>
+    D. Zhang, W. Ni, N. Fu, L. Hou, R. Zhang —
+    <span dir="ltr" style="unicode-bidi:isolate;">IEEE Trans. Inf. Forensics Security, Vol. 20, 2025, pp. 6719–6732</span>
+  </p>
+  <p style="margin-top:.4rem; font-size:.8rem;">
+    ترجمة أكاديمية عربية — <a href="../index.html">العودة إلى القائمة الرئيسية</a>
+  </p>
+</footer>
+
+</div><!-- .page-wrapper -->
+</body>
+</html>
