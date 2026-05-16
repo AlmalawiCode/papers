@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRIMε — نموذج حفظ الخصوصية بتعدين الأنماط والخوارزمية الجينية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        tags: 'ams'
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+<!-- ══════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════ -->
+<header class="paper-header">
+  <div class="conference-badge">IEEE Transactions on Information Forensics and Security — المجلد 19، 2024، الصفحات 571–584</div>
+  <h1>
+    PRIM&#x3b5;: نموذج جديد للحفاظ على الخصوصية<br>بالجمع بين تعدين الأنماط والخوارزمية الجينية
+  </h1>
+  <p style="opacity:.85; font-size:.95rem; margin-top:.8rem;">
+    <span dir="ltr" style="unicode-bidi:isolate;">DOI: 10.1109/TIFS.2023.3324769</span>
+  </p>
+  <div class="authors-grid" style="max-width:820px; margin:1.5rem auto 0;">
+    <div class="author-card">
+      <div class="name">Sheema Madhusudhanan</div>
+      <div class="email">Student Member, IEEE — IIITK Kottayam، كيرالا، الهند</div>
+    </div>
+    <div class="author-card">
+      <div class="name">Arun Cyril Jose</div>
+      <div class="email">IIITK Kottayam، كيرالا، الهند</div>
+    </div>
+    <div class="author-card">
+      <div class="name">Jayakrushna Sahoo</div>
+      <div class="email">Member, IEEE — IIITK Kottayam، الهند</div>
+    </div>
+    <div class="author-card">
+      <div class="name">Reza Malekian</div>
+      <div class="email">Senior Member, IEEE — جامعة مالمو، السويد</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     BACK LINK
+══════════════════════════════════════════ -->
+<a href="../index.html" class="back-link">→ العودة إلى قائمة الأوراق البحثية</a>
+
+<!-- ══════════════════════════════════════════
+     TABLE OF CONTENTS
+══════════════════════════════════════════ -->
+<nav class="toc">
+  <h2>فهرس المحتويات</h2>
+  <ol>
+    <li><a href="#abstract">الملخص</a></li>
+    <li><a href="#introduction">I. المقدمة</a></li>
+    <li><a href="#background">II. الخلفية النظرية</a></li>
+    <li><a href="#related">III. الأعمال السابقة</a></li>
+    <li><a href="#methodology">IV. المنهجية المقترحة</a></li>
+    <li><a href="#verification">V. التحقق من النموذج باستخدام PCTL</a></li>
+    <li><a href="#evaluation">VI. التقييم التجريبي</a></li>
+    <li><a href="#conclusion">VII. الخاتمة والأعمال المستقبلية</a></li>
+    <li><a href="#references">المراجع</a></li>
+  </ol>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════ -->
+<main>
+
+<!-- ── Abstract ── -->
+<section id="abstract">
+  <div class="abstract-box">
+    <div class="abstract-label">الملخص</div>
+    <p>
+      تقترح هذه الورقة نموذجاً متكاملاً للحفاظ على الخصوصية يدمج تعدين الأنماط والخوارزمية الجينية التطورية، يُعرف بـ<span class="ltr">Privacy-pReservIng with Minimum Epsilon (PRIMε)</span>. يُحقق النموذج أدنى قيمة ممكنة لميزانية الخصوصية $\varepsilon$ لحماية البيانات الشخصية والحساسة خلال عمليتَي تعدين البيانات ونشرها.
+    </p>
+    <p>
+      يعتمد النموذج على خوارزمية <span class="ltr">PLUM (Pattern Identification in the Locale of Users with Mining)</span> لتحديد الأنماط المتكررة في مجموعات البيانات الحاوية على معلومات حساسة للمستخدمين. تُنفَّذ عملية توزيع $\varepsilon$ عبر الخصوصية التفاضلية بالتوازي مع عملية التعدين باستخدام <span class="ltr">GAPRIMε</span>، مما يُنتج قياساً كمياً لخسارة الخصوصية $\varepsilon$ يتراوح بين 0.0001 و0.045. يحافظ النموذج على التوازن بين الخصوصية وجودة البيانات بمتوسط خطأ نسبي <span class="ltr">(ARE)</span> يبلغ 0.109 على البيانات الرقمية، ومقياس <span class="ltr">Earth Mover's Distance (EMD)</span> يتراوح بين [0.2, 1.3] على البيانات النصية. يُتحقق من النموذج رسمياً باستخدام <span class="ltr">Probabilistic Computational Tree Logic (PCTL)</span> ويُثبت قبوله للبيانات الخاصة تفاضلياً فقط حين $\varepsilon \leq 0.5$.
+    </p>
+    <div class="keywords">
+      <strong>الكلمات المفتاحية:</strong>
+      خصوصية البيانات، الخصوصية التفاضلية، الشبكات الاجتماعية، بيانات المسارات، تعدين الأنماط، الخوارزمية الجينية، التحقق من النماذج
+    </div>
+  </div>
+</section>
+
+<!-- ── I. Introduction ── -->
+<section id="introduction">
+  <h2 class="section-title">I. المقدمة</h2>
+  <p>
+    اكتسبت خصوصية البيانات الشخصية أهمية بالغة في السنوات الأخيرة في ظل الانتشار الواسع لأنظمة <span class="ltr">GPS</span> والشبكات الاجتماعية الإلكترونية <span class="ltr">(OSN)</span> والبطاقات الذكية وبطاقات الدوائر المتكاملة <span class="ltr">(IC)</span>. تحتوي هذه البيانات على تفاصيل دقيقة تتعلق بأنماط نشاط المستخدمين وسجلات تنقلاتهم، فيكثيراً ما يكون المستخدمون غير مدركين لما يُكشف عنهم من معلومات حساسة خلال تفاعلاتهم اليومية على الإنترنت.
+  </p>
+  <p>
+    تُعدّ اختراقات الخصوصية مصدر قلق بالغ عند جمع مثل هذه المعلومات، إذ إن بعض الخصائص تكون حساسة بطبيعتها. تؤكد مجلة هارفارد للقانون والسياسة العامة أن السعي نحو الخصوصية ربما يكون العنصر الأساسي لتحقيق السعادة لغالبية المواطنين، كونها ترتبط ارتباطاً وثيقاً بمستوى رضا الفرد عن نفسه واستقلاليته في الحياة. في عام 2019 واجه <span class="ltr">Facebook</span> اختراقاً أمنياً جسيماً أدى إلى تسريب بيانات 540 مليون حساب مستخدم. وفي الفترة بين 2020 و2021، ارتفعت تكلفة اختراق البيانات الفردية بنسبة 10.3%، فيما يُعرب 53% من مستخدمي الإنترنت حالياً عن قلقهم إزاء احتمالية الكشف عن بياناتهم الحساسة.
+  </p>
+  <p>
+    يُعالج نموذج <span class="ltr">PRIMε</span> المقترح هذه الإشكاليات من خلال دمج تعدين الأنماط الديناميكي مع الخوارزمية الجينية لتحقيق الخصوصية التفاضلية. تتمثل أبرز إسهامات هذه الورقة في:
+  </p>
+  <ul style="padding-right:2rem; margin-bottom:1rem; line-height:2.2;">
+    <li>
+      نموذج <strong>PRIMε</strong> الجديد الذي يُنتج الخصوصية التفاضلية بتعزيز التنفيذ المتوازي للخوارزمية الجينية <span class="ltr">GA</span> وتحسين قياس ميزانية الخصوصية $\varepsilon$ إلى نطاق [0.0001, 0.045].
+    </li>
+    <li>
+      خوارزمية تعدين قواعد هجينة ديناميكية <strong>PLUM</strong> لتعدين الأنماط المتكررة على مجموعات البيانات الحاوية على بيانات حساسة.
+    </li>
+    <li>
+      دالة تحسين <span class="ltr">GAPRIMε</span> الجديدة التي تُقلل من قيمة $\varepsilon$ وتحسب معدل الاضطراب.
+    </li>
+    <li>
+      التحقق الرسمي من نموذج <strong>PRIMε</strong> باستخدام <span class="ltr">PCTL</span>، مما يضمن قبول النموذج للبيانات الخاصة تفاضلياً فحسب عند $\varepsilon \leq 0.5$.
+    </li>
+  </ul>
+</section>
+
+<!-- ── II. Background ── -->
+<section id="background">
+  <h2 class="section-title">II. الخلفية النظرية</h2>
+  <p>
+    تكفي كمية صغيرة نسبياً من البيانات لإعادة التعريف بالأشخاص. عند تطبيق خوارزميات تعدين البيانات في ظل الحوكمة على الخصوصية، تصبح خاصية الحوكمة عاملاً محورياً. تعمل خوارزميات تعدين القواعد كـ<span class="ltr">FP tree growth</span> وخوارزمية <span class="ltr">PrePostPrePost⁺</span> و<span class="ltr">dFIN</span> و<span class="ltr">negFIN</span> عبر أشجار البادئة التي تُمثّل الخصائص المقابلة. غير أن قابلية توسعها على مجموعات البيانات الديناميكية تبقى محدودة، مما يستدعي تصميم خوارزمية تعدين دقيقة وخاصة في آنٍ واحد من خلال التنقل عبر العُقد والأضلاع معاً وبالتقاط الترابط بين البيانات.
+  </p>
+  <p>
+    تُوفر الدالة العشوائية $\mathbb{R}$ خصوصية $\varepsilon$-تفاضلية لجميع مجموعات البيانات في $\mathbb{D}_1$، مما يُنتج $\mathbb{D}_2$ التي تختلف بعنصر واحد على الأكثر، وتكون احتمالية تسريب المعلومات ($\delta$) كما في المعادلة التالية:
+  </p>
+  <div class="equation-block">
+    $\mathbb{P}_r[\mathbb{R}(\mathbb{D}_1) \in \mathbb{Z}] \;\leq\; e^{\varepsilon} \cdot \mathbb{P}_r[\mathbb{R}(\mathbb{D}_2) \in \mathbb{Z}] + \delta$
+    <span class="eq-label">(1)</span>
+  </div>
+  <p>
+    في المعادلة (1)، تكون $\varepsilon$ و$\delta$ أعداداً حقيقية غير سالبة، وتتقلص $\delta$ إلى الصفر حين تصبح الخوارزمية $\varepsilon$-خاصة تفاضلياً. تُستخدم أزواج الخصوصية والفائدة المشتقة من <span class="ltr">Earth Movers Distance (EMD)</span> وفق المعادلة التالية:
+  </p>
+  <div class="equation-block">
+    $K(b)(Z) \;\leq\; e^{\varepsilon E_{d_\gamma}} \cdot K(b')(Z)$
+    <span class="eq-label">(2)</span>
+  </div>
+  <p>
+    بينما $\mathbb{E}_{d_\gamma} \to 0$ عند $\varepsilon \geq 0$، يُعدّ الوثيقتان $b$ و$b'$ متشابهتَين. تدعم تقنيات الحفاظ على الخصوصية مثل إزالة الحساسية عن البيانات أو تشويشها أو استخدام أسماء مستعارة حماية البيانات الحساسة في مجموعات البيانات. غير أن خصوصية هذه البيانات المجهولة تتعرض للخطر حين يُدمج مع مجموعة بيانات متاحة للعموم أو يُستغل فيها معرفة بالخلفية.
+  </p>
+</section>
+
+<!-- ── III. Related Works ── -->
+<section id="related">
+  <h2 class="section-title">III. الأعمال السابقة</h2>
+  <p>
+    تفحص دراسات عديدة مقياس التفرد <span class="ltr">(Unicity)</span>، وهو مقياس النسبة المئوية للخصائص في البيانات الفريدة تعريفياً. يُظهر <span class="ltr">Naini et al.</span> أن هجوم إخفاء الهوية ممكن في بيانات المسار من خلال امتلاك معرفة مسبقة بالمواقع المُزارة. للتخفيف من التهديدات التي تطال الخصوصية الشخصية، يُستخدم عادةً أسلوب التشويش باستخدام حماية خصوصية الموقع، والخوارزميات التشفيرية، أو توليف المسارات.
+  </p>
+  <p>
+    صاغ <span class="ltr">Liu et al.</span> مفهوم الخصوصية التفاضلية المعتمِدة <span class="ltr">(Dependent Differential Privacy — DDP)</span> ودمجوا فيها آلية الاضطراب المعتمِدة <span class="ltr">(DPM)</span> مع ضوضاء لابلاس لضمان الخصوصية في <span class="ltr">DDP</span>. غير أن معامل الاعتمادية في <span class="ltr">DDP</span> يبقى عرضة للمهاجمين، مما يُنشئ ثغرات أمنية. اقترح <span class="ltr">Bao et al.</span> آلية غاوسية ارتباطية <span class="ltr">(CGM)</span> تُطبّق <span class="ltr">(ε,δ)</span>-خصوصية تفاضلية محلية على البيانات المتدفقة.
+  </p>
+  <p>
+    تُقدم أساليب الحفاظ على الخصوصية الحالية في نشر البيانات <span class="ltr">(PPDP)</span> تحسينات ملموسة في دمج المعلومات السياقية مع الحفاظ على الخصوصية. تشمل الأساليب الشائعة: إزالة الحساسية عن البيانات الحساسة، وتشويش البيانات الحساسة، واستخدام أسماء مستعارة لتمثيل البيانات الحساسة. لا يزال <span class="ltr">PPDM</span> بحاجة إلى تطوير لاستيعاب المعلومات السياقية مع الحفاظ على الخصوصية. تُعالج هذه الورقة هذه الثغرة بتصميم نموذج <span class="ltr">PRIMε</span> الذي يدمج تعدين الأنماط الديناميكي مع <span class="ltr">GA</span> لتخصيص $\varepsilon$ بصورة تكيّفية.
+  </p>
+</section>
+
+<!-- ── IV. Methodology ── -->
+<section id="methodology">
+  <h2 class="section-title">IV. المنهجية المقترحة</h2>
+
+  <h3 class="subsection-title">أ. نموذج PRIMε</h3>
+  <p>
+    يستهدف نموذج <span class="ltr">PRIMε</span> ضمان <span class="ltr">PPDP</span> و<span class="ltr">PPDM</span> ويُوضح الشكل 1 تصميمه العالي المستوى. يحوّل <span class="ltr">PRIMε</span> مجموعة البيانات أولاً إلى معاملات ثم يتقدم بتعدين الأنماط المتكررة في شجرة <span class="ltr">PLUM</span>، وهي تطوير على خوارزمية <span class="ltr">negFIN</span>. تتكوّن مجموعة المستخدمين من عُقد في شجرة <span class="ltr">PLUM</span>، وتُمثّل كل وسمة تعريف شخصي <span class="ltr">(ID)</span> ووسم مساعد <span class="ltr">(AT)</span> معاً أضلاع الشجرة. يُمكن أن يكون <span class="ltr">AT</span> أي رابط مثل الطابع الزمني في بيانات المسار، أو وضع الدفع في بيانات المعاملات البنكية، أو أي معرّف آخر يربط العُقد.
+  </p>
+  <p>
+    يُطبّق <span class="ltr">PRIMε</span> الخصوصية التفاضلية بصورة ديناميكية وبالتوازي مع عملية التعدين من خلال استراتيجية التحسين في <span class="ltr">GAPRIMε</span>. على خلاف الأساليب الحالية التي تُضيف ضوضاء وفق حساسية الاستعلام الثابتة، تُقدّر <span class="ltr">GAPRIMε</span> حساسية الاستعلام <span class="ltr">(QS)</span> ديناميكياً باستخدام نموذج الانحدار الخطي <span class="ltr">(LReg)</span> كأسلوب لتقدير حساسية الاستعلام بشكل ديناميكي.
+  </p>
+
+  <h3 class="subsection-title">ب. خوارزمية PLUM — تعدين الأنماط في موقع المستخدمين</h3>
+  <p>
+    يوفر تعدين الأنماط المتكررة رؤى حول العناصر التي تظهر معاً بمقاييس موضوعية لعدد التكرارات <span class="ltr">(SC)</span> والثقة <span class="ltr">(CF)</span> في معاملة بيانات. استُعيض في هذا العمل عن <span class="ltr">NegNodeSet</span> وخوارزمية <span class="ltr">negFIN</span> للاستفادة من قدرة هياكل البيانات الفعّالة. يمكن لـ<span class="ltr">NegNodeSet</span> تخزين معلومات المجموعات المتكررة وتشفير العُقد في الشجرة في شكل متجهات بت. تُنشئ <span class="ltr">PLUM</span> مجموعة العُقد والأضلاع <span class="ltr">NE{}</span> وتستبدل مستوى 1 بالموقع كعُقدة والزوج <span class="ltr">(ID, AT)</span> كضلع.
+  </p>
+
+  <div class="figure-placeholder">
+    [الشكل 1 — التصميم العالي المستوى لنموذج PRIMε: تعدين الأنماط + الخوارزمية الجينية + الخصوصية التفاضلية]
+  </div>
+  <div class="figure-caption">الشكل 1: البنية الكاملة لنموذج PRIMε</div>
+
+  <div class="figure-placeholder">
+    [الشكل 2 — (أ) توليد العناصر المتكررة، (ب) شجرة PLUM مع ترتيب SC تصاعدي والجذر Φ والخرائط البتية]
+  </div>
+  <div class="figure-caption">الشكل 2: بناء شجرة PLUM وخريطة البت</div>
+
+  <!-- Algorithm 1 -->
+  <div class="algorithm-box">
+    <div class="algo-header">الخوارزمية 1: بناء شجرة PLUM — تعدين الأنماط في موقع المستخدمين</div>
+    <div class="algo-io">
+      <span class="io-label">المدخلات:</span>
+      <span class="io-value">
+        \(D\) — مجموعة البيانات
+      </span>
+    </div>
+    <div class="algo-io">
+      <span class="io-label">المخرجات:</span>
+      <span class="io-value">
+        شجرة PLUM المُعدِّنة للقواعد
+      </span>
+    </div>
+    <div class="algo-body" dir="ltr"><span class="lnum"> 1</span>[ID, AT, L] ← σ(D);          <span class="cmt">/* Initialize & transform D to transaction */</span>
+<span class="lnum"> 2</span><span class="kw">while</span> True <span class="kw">do</span>
+<span class="lnum"> 3</span>    <span class="kw">if</span> t == Location data <span class="kw">then</span>      <span class="cmt">/* Construct tree with L as nodes N{} */</span>
+<span class="lnum"> 4</span>        N.append(L_{lat,long}) ← LT data;
+<span class="lnum"> 5</span>    <span class="kw">else if</span> t == network location data <span class="kw">then</span>
+<span class="lnum"> 6</span>        N.append(L_i) ← network location data;
+<span class="lnum"> 7</span>    <span class="kw">else if</span> t == locale of users <span class="kw">then</span>
+<span class="lnum"> 8</span>        N.append(L_i) ← locale data;
+<span class="lnum"> 9</span>    <span class="kw">else</span>
+<span class="lnum">10</span>        Continue;
+<span class="lnum">11</span>    E ← {ID_i, AT_i}, bit_vector(b) = [];   <span class="cmt">/* Edge construction */</span>
+<span class="lnum">12</span>    <span class="kw">if</span> (ID_i ∪ L_j) ∈ TS <span class="kw">then</span>
+<span class="lnum">13</span>        b.append(1);
+<span class="lnum">14</span>    <span class="kw">else</span>
+<span class="lnum">15</span>        b.append(0);
+<span class="lnum">16</span>    Compute SC(ID_i, L_j) in NE{} &amp;&amp; check if SC ≥ SC_min;
+<span class="lnum">17</span>    SC(ID_i, L_j) ← SC(ID_i, L_j) - ¬(SC(ID_i^c, L_j^c));   <span class="cmt">/* Separate NE{} &amp; {NE}^c */</span>
+<span class="lnum">18</span>    <span class="kw">if</span> SC(ID_i ∪ L_j) &lt; SC_min ∪ CF(ID_i, L_j) &lt; CF_min <span class="kw">then</span>   <span class="cmt">/* Employs pruning */</span>
+<span class="lnum">19</span>        Prune &lt;ID_i, AT&gt; with &lt;L_i&gt;;
+<span class="lnum">20</span><span class="kw">return</span> PLUM tree</div>
+  </div>
+
+  <p>
+    تحفظ شجرة <span class="ltr">PLUM</span> المجموعة التكميلية <span class="ltr">(NE{})^c</span>، وهي بيانات مصفوفة يمكن اشتقاقها من متجهات البت التكميلية لـ<span class="ltr">NE{}</span>. يعني هذا أنه إذا كانت <span class="ltr">ID1</span> و<span class="ltr">ID2</span> و<span class="ltr">ID3</span> في الموقع $L_1$، فإن <span class="ltr">(NE(ID1, L1))^c</span> يزود بتفاصيل مسارات <span class="ltr">ID2</span> و<span class="ltr">ID3</span> في $L_1$، مما يزيد من فائدة البيانات في هذه المرحلة ويكشف عن البيانات الارتباطية المخفية.
+  </p>
+
+  <h3 class="subsection-title">ج. تخصيص ميزانية الخصوصية في PRIMε باستخدام GAPRIMε</h3>
+  <p>
+    مع نمو حجم مجموعات البيانات، يُنجز تعدين الأنماط المتكررة ديناميكياً عبر شجرة <span class="ltr">PLUM</span>. يُبرز <span class="ltr">GAPRIMε</span> تخصيص $\varepsilon$ للبيانات بالتوازي مع عملية التعدين. يتم تمرير العناصر المُرضية للحد الأدنى لعدد التكرارات <span class="ltr">(SC_threshold)</span> من شجرة <span class="ltr">PLUM</span> إلى نموذج <span class="ltr">GAPRIMε</span> الذي يبحث عن قيمة $\eta$ اللازمة لحماية البيانات الشخصية والحساسة.
+  </p>
+  <p>
+    تُعدّ كمية $\eta$ المضافة إلى كل خاصية ذات أهمية بسبب الزيادة المتصاعدة في ضوضاء البيانات. يهدف النموذج إلى تحقيق خسارة خصوصية ضئيلة عبر تحديد قيمة $\varepsilon$ بالصفر في كلٍّ من البيانات الرقمية والنصية. في <span class="ltr">GAPRIMε</span>، أثناء تطبيق الخصوصية التفاضلية النصية، تُحدَّد قيمة هدف <span class="ltr">EMD</span> أيضاً بالصفر للحفاظ على الفائدة. الهدف من $\|E\| \leq \min(\|E\|_{\text{threshold}})$ هو:
+  </p>
+  <div class="equation-block">
+    $\eta = \mathrm{Arg\,min} \sum_{i=1}^{n} \{\mathbb{F}(W_i,\, L_i,\, AT_i,\, ID_i,\, SC_i)\}$
+    <span class="eq-label">(3)</span>
+  </div>
+  <p>
+    حيث $\mathbb{F}$ هي دالة التنظيم لتقليل إجمالي $\eta$ المضاف إلى مجموعة البيانات.
+  </p>
+
+  <!-- Algorithm 2 -->
+  <div class="algorithm-box">
+    <div class="algo-header">الخوارزمية 2: الخوارزمية الجينية GAPRIMε — الحفاظ على الخصوصية بالحد الأدنى من ε</div>
+    <div class="algo-io">
+      <span class="io-label">المدخلات:</span>
+      <span class="io-value">
+        شجرة PLUM &emsp; الاستعلام \((\gamma)\) &emsp; مجموعة البيانات \((D)\) &emsp; عدد التكرارات \((SC)\)
+      </span>
+    </div>
+    <div class="algo-io">
+      <span class="io-label">المخرجات:</span>
+      <span class="io-value">
+        \(\eta\)، \(\langle \varepsilon \rangle\)، \(\|E\|_{d_\gamma}\) — البيانات الخاصة تفاضلياً
+        \(\eta(ID, AT, L)\)
+      </span>
+    </div>
+    <div class="algo-body" dir="ltr"><span class="lnum"> 1</span>R_model = L_Reg().fit(X,Y);      <span class="cmt">/* Linear regression to find R²(D) */</span>
+<span class="lnum"> 2</span>R²(D) = R_model.Score(X,Y);
+<span class="lnum"> 3</span>t ← σ(D);
+<span class="lnum"> 4</span>[ID, AT, L] ← σ(D);              <span class="cmt">/* Initialize & transform D to transaction */</span>
+<span class="lnum"> 5</span><span class="kw">while</span> True <span class="kw">do</span>
+<span class="lnum"> 6</span>    γ_t ← <span class="kw">send</span> PLUM;              <span class="cmt">/* Querying to PLUM Tree Server */</span>
+<span class="lnum"> 7</span>    <span class="kw">if</span> γ_t <span class="kw">then</span>                    <span class="cmt">/* Employs GAPRIMε */</span>
+<span class="lnum"> 8</span>        Function GA(t{ID_t ∪ L_t ∪ AT_t}, SC);
+<span class="lnum"> 9</span>        ε → target 0;
+<span class="lnum">10</span>        <span class="kw">if</span> any(t{ID_i ∪ L_j ∪ AT_j} is string) <span class="kw">then</span>
+<span class="lnum">11</span>            ‖E‖_{d_γ} → target 0;   <span class="cmt">/* EMD target 0 for text data */</span>
+<span class="lnum">12</span>            ‖E‖ ← min(‖E‖_threshold);
+<span class="lnum">13</span>        Q_S ← Calculate Q_S(t, R_model); <span class="cmt">/* Dynamic query sensitivity */</span>
+<span class="lnum">14</span>        Q_S ← 0;
+<span class="lnum">15</span>        Q(d_{p(γ_t)}) = L_Reg(d_{p(γ_t)}); <span class="cmt">/* Evaluate L_Reg on d_p */</span>
+<span class="lnum">16</span>        ∇Q(d_{p(γ_t)}) = Coeff.(L_Reg);   <span class="cmt">/* Compute gradient vector */</span>
+<span class="lnum">17</span>        ∇Q(d_{p(γ_t)}) = ∇Q(d_{p(γ_t)}) / ‖∇Q(d_{p(γ_t)})‖; <span class="cmt">/* Normalize */</span>
+<span class="lnum">18</span>        Λ(∇Q(d_{p(γ_t)})) = Λ_fac · ∇Q(d_{p(γ_t)});  <span class="cmt">/* Scale by factor S_fac */</span>
+<span class="lnum">19</span>        Q_S = √(Σ_{i=1}^{n} (Λ(∇Q(d_{p(γ_t)})))²); <span class="cmt">/* L2 sensitivity norm */</span>
+<span class="lnum">20</span>        Return Q_S;
+<span class="lnum">21</span>        ‖E‖_{d_γ} ← Update min(max(‖E‖_{d_γ}, 0), 2); <span class="cmt">/* EMD range [0,2] */</span>
+<span class="lnum">22</span>        ε ← Update_ε(ε, Q_S);
+<span class="lnum">23</span>        <span class="kw">while</span> 0 ≤ ε ≤ 0.5 &amp;&amp; (R²(t_perturbed) ≥ 0.5 * R²(t)) <span class="kw">do</span>
+<span class="lnum">24</span>            σ_min(W_i) ← λ(Q_S/ε);   <span class="cmt">/* Apply additive noise W_i */</span>
+<span class="lnum">25</span>            t_perturbed ← W_i(t);
+<span class="lnum">26</span>    η ← Arg_min Σ_{i=1}^{n} F(W_i, L_i, AT_i, ID_i, SC_i);
+<span class="lnum">27</span><span class="kw">return</span> η, &lt;ε&gt;, ‖E‖_{d_γ} — Differentially Private Data η(ID,AT,L)</div>
+  </div>
+
+  <p>
+    تُقلّل $\mathbb{F}$ من قيمة $\eta$ بانحدار L2 أو الانحدار الحرفي <span class="ltr">(Ridge Regression)</span>، حيث تُرضي قيم $R^2$ لـ$D_1$ و$D_2$ الشرط:
+  </p>
+  <div class="equation-block">
+    $R^2(\eta(D_1)) \;\geq\; 0.5 \times R^2(D_1)$
+    <span class="eq-label">(4)</span>
+  </div>
+  <p>
+    حيث $D_2 = \eta(D_1)$. تُطبّق <span class="ltr">GAPRIMε</span> على $D_1$ لتحصيل $\eta(D_1)$ مع اضطراب المستخدم الفردي $(\eta_n)$ فوق $D_1$. يُقدّر نموذج الانحدار الخطي حساسية الاستعلام $Q_S$ ديناميكياً من خلال التدرج:
+  </p>
+  <div class="equation-block">
+    $Q_S = \sqrt{\sum_{i=1}^{n} \left(\Lambda\bigl(\nabla Q(d_{p(\gamma_t)})\bigr)\right)^2}$
+    <span class="eq-label">(5)</span>
+  </div>
+
+  <div class="figure-placeholder">
+    [الشكل 3 — (أ) بناء شجرة NE(PLUM): تنقل ID1 وID2 نحو L1 عند AT1 ثم AT2، وانتقال ID3 نحو L1. (ب) خريطة البت]
+  </div>
+  <div class="figure-caption">الشكل 3: بناء شجرة NE(PLUM) وخريطة البت للمسارات</div>
+
+  <div class="figure-placeholder">
+    [الشكل 4 — عملية اختيار الفرد الأصلح بالاختيار البطولي وعبور الحلقة في GAPRIMε]
+  </div>
+  <div class="figure-caption">الشكل 4: عملية الاختيار والتهجين والطفرة في GAPRIMε</div>
+</section>
+
+<!-- ── V. Model Verification ── -->
+<section id="verification">
+  <h2 class="section-title">V. التحقق من نموذج PRIMε باستخدام PCTL</h2>
+  <p>
+    في نموذج <span class="ltr">PRIMε</span>، إلى جانب الحالات الاحتمالية، تكون انتقالات الحالة غير محددة وضرورية لنمذجة السلوك المتشابك للعمليات المتزامنة. لذلك يُنمذج <span class="ltr">PRIMε</span> مع <span class="ltr">MDP</span> معاً. يُستخدم المنطق الزمني الاحتمالي <span class="ltr">PCTL</span> للتحقق من نمذجة النظام وتقييم مواصفاته.
+  </p>
+
+  <div class="figure-placeholder">
+    [الشكل 5 — (أ) عملية انتقال الحالات MDP في PRIMε، (ب) التحقق من النموذج باستخدام PCTL]
+  </div>
+  <div class="figure-caption">الشكل 5: MDP وعملية التحقق بـ PCTL في PRIMε</div>
+
+  <p>
+    تُعرَّف صيغة حالة <span class="ltr">PCTL</span> وفق المعادلة:
+  </p>
+  <div class="equation-block">
+    $\Phi ::= \mathit{true} \mid a \mid \Phi_1 \land \Phi_2 \mid \neg\Phi \mid \mathbb{P}_j(\varphi)$
+    <span class="eq-label">(8)</span>
+  </div>
+  <p>
+    وتُعرَّف صيغة المسار وفق:
+  </p>
+  <div class="equation-block">
+    $\varphi ::= O\Phi \mid \Phi_1\, U\, \Phi_2 \mid \Phi_1\, U^{\leq n}\, \Phi_2$
+    <span class="eq-label">(9)</span>
+  </div>
+  <p>
+    تقبل الصيغة صحيحة حين تكون الصيغة $\Phi$ صحيحة في مسار ما. كذلك تبقى الحالة صحيحة حتى تبلغ حالةً أخرى مُرضية <span class="ltr">(Sat)</span>. في سيناريو تحويل البيانات إلى معاملات، يكون تخصيص $\varepsilon$ في <span class="ltr">PRIMε</span> بالشرط: $\varepsilon \leq 0.5$ وإلا $\varepsilon > 0.5 \in a$، حيث $a$ هي قضية ذرية لأي حالة. تتحقق صيغة الحالة $\Phi$ حين:
+  </p>
+  <ul style="padding-right:2rem; margin-bottom:1rem; line-height:2.2;">
+    <li>الحالة صحيحة دائماً <span class="ltr">(true)</span></li>
+    <li>القضية الذرية $a$ صحيحة</li>
+    <li>تقاطع حالتَين فرعيتَين $\Phi_1, \Phi_2$ صحيح</li>
+    <li>نفي حالة صحيح</li>
+    <li>الاحتمال $\mathbb{P}_j(\varphi)$ صحيح</li>
+  </ul>
+  <p>
+    تكون <span class="ltr">PRIMε</span> في حالة انتقال الحالة $T_{\text{PRIMε}} = \Psi$ حين يصل التحقق من نموذج <span class="ltr">PRIMε</span> إلى حالة مُرضية $\mathrm{Sat}(\Phi)$ عبر الاجتياز العودي لشجرة تحليل صيغة الحالة $\Phi$ مع العُقد كصيغ فرعية $\Psi$. مع الأخذ بعين الاعتبار سلسلة ماركوف الظاهرة في الشكل 5(أ)، تُنشأ شجرة التحليل وفق الشكل 5(ب) للحصول على الخصوصية التفاضلية بعد معالجة البيانات في النموذج.
+  </p>
+  <p>
+    عند $\varepsilon \leq 0.5$ تُرضي الحالة $S_2$ باحتمالية 0.99. وعليه فإن الانتقال إلى اختراق بيانات الخصوصية يحدث باحتمالية تساوي 0. نقول إن $T_{\text{PRIMε}} = \Phi$ حين يكون مجموعة الإشباع $\mathrm{Sat}(\Phi)$ قابلاً للتحديد باجتياز عودي لشجرة التحليل. يُثبت ذلك أن النموذج صحيح وأن صيغة المسار لا تُحسب، وأن $\neg(\Psi)$ مُرضية، مما يجعل النموذج يعتمد <span class="ltr">True</span> تحت جميع الشروط.
+  </p>
+</section>
+
+<!-- ── VI. Evaluation ── -->
+<section id="evaluation">
+  <h2 class="section-title">VI. التقييم التجريبي</h2>
+
+  <h3 class="subsection-title">أ. إعداد التجارب</h3>
+  <p>
+    أُجريت التجارب على جهاز اختبار بمعالج <span class="ltr">Intel i7 بتردد 3.40GHz</span> وذاكرة 16GB باستخدام <span class="ltr">Ubuntu 16.04.7 LTS OS kernel v4.4</span>. لتقييم نموذج <span class="ltr">PRIMε</span>، استُخدمت مجموعات البيانات التالية: D1-Geolife، D2-Gowalla، D3-Brightkite، D4-TDrive، D5-PKDD data. كما قُيِّمت قابلية التوسع بمجموعات بيانات المعاملات البنكية <span class="ltr">(D6-Bank Transactions)</span> والسجلات الطبية الإلكترونية <span class="ltr">(D7-EHR data بحجم 3.2MB)</span>. لتوليد مجموعة أكثر شمولاً من الكلمات، استُخدم نموذج <span class="ltr">Gensim's Word2Vec</span> في <span class="ltr">GAPRIMε</span>.
+  </p>
+
+  <h3 class="subsection-title">ب. النتائج</h3>
+  <p>
+    أظهر تعدين الأنماط بـ<span class="ltr">PLUM</span> متوسط وقت تشغيل قدره 6.88 ثانية. يُوضح الشكل 6(أ) أن تعدين الأنماط بـ<span class="ltr">PLUM</span> يحقق أدنى وقت تشغيل مع ازدياد <span class="ltr">SC</span> مقارنةً بجميع الأساليب الأخرى. يُبيّن الشكل 6(ب) متوسط قيم $\varepsilon$ خلال إخضاع <span class="ltr">PRIMε</span> لمجموعات البيانات D1 وD2 وD3 وD4. يُظهر الشكل 6(ب) أنه مع زيادة <span class="ltr">SC</span>، تتناقص قيمة $\varepsilon$، مما يُثبت أن البيانات ذات <span class="ltr">SC ≥ 50</span> محمية بمزيد من الضوضاء عبر الحد من قيمة $\varepsilon$ عند 0.0001. الانحراف المعياري $\mathrm{SD}(\varepsilon)$ هو 0.01765.
+  </p>
+
+  <h4 class="subsubsection-title">1) تحليل جودة البيانات</h4>
+  <p>
+    يُقيّم هذا المقياس العلاقة بين الدقة أو الجودة والمستوى المطبَّق من حماية الخصوصية. الخطأ النسبي المتوسط <span class="ltr">(Average Relative Error — ARE)</span> يحسب الفرق النسبي المتوسط بين فائدة آلية خاصة وفائدة آلية أساسية غير خاصة. حافظ <span class="ltr">PRIMε</span> على توازن معتبر بين قابلية استخدام البيانات وحفظ الخصوصية، إذ يُطبّق <span class="ltr">GAPRIMε</span> الاضطراب الموضوعي بأسلوب محسَّن. عند استهداف استعلام $(\gamma)$ لمجموعة بيانات، تُشتق مجموعة البيانات الخاصة تفاضلياً $D'$ وفق:
+  </p>
+  <div class="equation-block">
+    $\gamma(\text{PRIM}\varepsilon_D) \;\to\; D' \quad \&\quad D' = (\eta D) + \eta'$
+    <span class="eq-label">(10)</span>
+  </div>
+  <p>
+    حيث تُضاف $\eta$ إلى خصائص البيانات وتحسب دالة التنظيم $\eta'$ لتقليل إجمالي الضوضاء المضافة.
+  </p>
+
+  <div class="table-wrapper">
+    <table dir="ltr">
+      <caption style="direction:rtl;">جدول I: النتيجة الفعلية مقارنةً بالنتيجة المفروضة بالخصوصية التفاضلية</caption>
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>AT</th>
+          <th colspan="2">Actual Data</th>
+          <th colspan="2">Data Retrieved</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th></th>
+          <th>ID</th>
+          <th>L</th>
+          <th>ID</th>
+          <th>L</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2">D1</td>
+          <td>2</td>
+          <td>10</td>
+          <td>4</td>
+          <td>3.6342</td>
+          <td>1.151</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>10</td>
+          <td>4</td>
+          <td>12.790</td>
+          <td>0.20007</td>
+        </tr>
+        <tr>
+          <td rowspan="2">D2</td>
+          <td>1</td>
+          <td>23</td>
+          <td>145</td>
+          <td>11.5</td>
+          <td>58.725</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>23</td>
+          <td>145</td>
+          <td>55.2</td>
+          <td>81.2</td>
+        </tr>
+        <tr>
+          <td rowspan="2">D3</td>
+          <td>3</td>
+          <td>6</td>
+          <td>5.6</td>
+          <td>11.5</td>
+          <td>8.72</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>6</td>
+          <td>5.6</td>
+          <td>13.2</td>
+          <td>6.12</td>
+        </tr>
+        <tr>
+          <td rowspan="2">D4</td>
+          <td>5</td>
+          <td>3</td>
+          <td>6</td>
+          <td>11.5</td>
+          <td>9.2</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>9</td>
+          <td>4</td>
+          <td>5.2</td>
+          <td>7.7</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrapper">
+    <table dir="ltr">
+      <caption style="direction:rtl;">جدول II: متوسط الخطأ النسبي (ARE) مقابل قيم ε</caption>
+      <thead>
+        <tr>
+          <th>ε Values</th>
+          <th>SC (%)</th>
+          <th>D1</th>
+          <th>D2</th>
+          <th>D3</th>
+          <th>D4</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>0.0001</td><td>90</td><td>0.2803</td><td>0.2222</td><td>0.3027</td><td>0.2724</td></tr>
+        <tr><td>0.0003</td><td>80</td><td>0.2757</td><td>0.2198</td><td>0.1828</td><td>0.2623</td></tr>
+        <tr><td>0.0005</td><td>75</td><td>0.2460</td><td>0.1475</td><td>0.1215</td><td>0.1351</td></tr>
+        <tr><td>0.0010</td><td>60</td><td>0.0842</td><td>0.0670</td><td>0.0823</td><td>0.0923</td></tr>
+        <tr><td>0.0030</td><td>55</td><td>0.0842</td><td>0.0431</td><td>0.0789</td><td>0.0850</td></tr>
+        <tr><td>0.0050</td><td>40</td><td>0.0301</td><td>0.0082</td><td>0.0051</td><td>0.0065</td></tr>
+        <tr><td>0.0100</td><td>30</td><td>0.0181</td><td>0.0041</td><td>0.0048</td><td>0.0079</td></tr>
+        <tr><td>0.0400</td><td>20</td><td>0.0071</td><td>0.0045</td><td>0.0052</td><td>0.0081</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="subsubsection-title">2) تحليل الأداء</h4>
+  <p>
+    التعقيد الزمني لبناء شجرة <span class="ltr">PLUM</span> هو $O(e \times (n+m))$ في أسوأ الحالات، حيث $e$ عدد الأضلاع، $n$ وأحجام العقد. التعقيد الزمني لـ<span class="ltr">GAPRIMε</span> هو $O(p \times g(l + 1 + f_t))$؛ حيث $p$ حجم المجتمع، و$g$ عدد الأجيال، و$l$ طول الكروموسوم، و$f_t$ تعقيد دالة الفائدة $O(\log n)$. بالتالي يكون التعقيد الكلي الأسوأ لـ<span class="ltr">PRIMε</span> هو:
+  </p>
+  <div class="equation-block">
+    $\mathcal{O}(n \log n)$
+    <span class="eq-label">(11)</span>
+  </div>
+
+  <div class="figure-placeholder">
+    [الشكل 6 — (أ) متوسط وقت التشغيل مقابل SC على مجموعات البيانات D1-D4 مقارنةً بـ PLUM وN-list وFP tree وdFIN وnegFIN، (ب) متوسط ميزانية الخصوصية ε، (ج-و) تغيّر ε على مجموعات البيانات على أعماق مختلفة من شجرة PLUM في 4 تكرارات]
+  </div>
+  <div class="figure-caption">الشكل 6: وقت التشغيل وقيم ε عبر التكرارات المختلفة</div>
+
+  <h3 class="subsection-title">ج. مناقشات</h3>
+  <p>
+    وفق شرط التمييز الإبداعي $\varepsilon$-indistinguishable، يختلف تأثير الخصوصية التفاضلية بحسب كمية الضوضاء المضافة. يُثبت جدول I أن <span class="ltr">PRIMε</span> مقاوم لتسريب الخصوصية. تُظهر الأشكال 6(ج)-6(و) أن تخصيص $\varepsilon$ موزَّع بالتساوي عبر مجموعات البيانات عند $\varepsilon \leq 0.025$ حتى عمق 18 في شجرة <span class="ltr">PLUM</span>.
+  </p>
+  <p>
+    تُظهر نتائج الجدول II أن <span class="ltr">ARE</span> يكون أدنى ما يمكن عند $\varepsilon = 0.04$ وأعلى قبولاً عند $\varepsilon = 0.0001$. يرتبط هذا التباين بمقياس <span class="ltr">SC</span>، إذ أن $SC(\%) \propto \frac{1}{\varepsilon}$. يُبيّن الشكل 8 الانحراف بين القيم المتوقعة والفعلية في البيانات المُشوَّشة.
+  </p>
+
+  <div class="figure-placeholder">
+    [الشكل 7 — استجابات PRIMε على D1 وD2 وD3 وD4 للاستعلامات التي كانت ستنتج في {Φ}]
+  </div>
+  <div class="figure-caption">الشكل 7: مقاومة PRIMε لاستعلامات إعادة التعريف</div>
+
+  <div class="figure-placeholder">
+    [الشكل 8 — القيمة المتوقعة مقابل القيمة الفعلية مع قياس على البيانات المُشوَّشة والانحراف في (أ) D1 و(ب) D2 و(ج) D3 و(د) D4]
+  </div>
+  <div class="figure-caption">الشكل 8: مقارنة القيم المتوقعة والفعلية في PRIMε</div>
+
+  <h3 class="subsection-title">د. نماذج الهجوم والتدابير الدفاعية</h3>
+  <p>
+    يُعدّ إخفاء الهوية عن البيانات الفعلية أو استرجاعها ممكناً حين يملك المهاجم معرفة خلفية بالبيانات ويربط نتيجة الاستعلام بخصائص شبه-معرّفة وخصائص حساسة وخصائص استنتاج العضوية.
+  </p>
+  <p>
+    <strong>1) هجوم المعرفة الخلفية:</strong> يُطبّق <span class="ltr">PRIMε</span> الاضطراب الموضوعي في جميع الحالات؛ لذا تكون احتمالية تسريب البيانات معدومة. يوفر النموذج دفاعاً موحداً ضد هجوم إعادة البناء من خلال آلية الدفاع نفسها المستخدمة ضد هجوم استنتاج العضوية.
+  </p>
+  <p>
+    <strong>2) هجوم استنتاج العضوية:</strong> يُطبّق <span class="ltr">PRIMε</span> خوارزمية جينية مُحسَّنة تُنشئ بيانات مجهولة ديناميكياً، مما يجعل قيمتَي $\varepsilon$ و$\eta$ غير قابلتَين للتنبؤ أو الاسترجاع؛ وبالتالي لن يحصل المهاجم على زوج مطابق من &lt;البيانات الأصلية، البيانات المجهولة&gt;.
+  </p>
+  <p>
+    <strong>3) هجوم ميزانية الخصوصية:</strong> يُحسب $\varepsilon$ ديناميكياً من <span class="ltr">GAPRIMε</span>. تُعقّد <span class="ltr">GAPRIMε</span> الاستعلامات المهندَسة لكونها تحسب $\varepsilon$ ديناميكياً من خلال الخوارزمية الجينية وبالتالي لا يمكن اشتقاق $\varepsilon$ و$\eta$ من بعضهما البعض في <span class="ltr">PRIMε</span>.
+  </p>
+
+  <h3 class="subsection-title">هـ. المقارنة مع الأعمال ذات الصلة</h3>
+
+  <div class="table-wrapper">
+    <table dir="ltr">
+      <caption style="direction:rtl;">جدول V: مقارنة PRIMε مع الأعمال ذات الصلة لتقييم الخصوصية التفاضلية</caption>
+      <thead>
+        <tr>
+          <th>Quantifiers</th>
+          <th>DP with LPM [1]</th>
+          <th>DDP with LPM [46]</th>
+          <th>DP with GM [48]</th>
+          <th>DP with DL [94]</th>
+          <th><strong>DP with PRIMε</strong></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Datasets</td>
+          <td>Traffic (0.8M)</td>
+          <td>Gowalla (1.1M), Adult (48K), Social circle (13.6M)</td>
+          <td>Web (145K), Taxi (5K)</td>
+          <td>T-Drive (10K taxi GPS)</td>
+          <td><strong>7 datasets (Geolife 17K, Gowalla 1.1M, Brightkite 272K, TDrive, PKDD 1.7M, Bank 5M, EHR 3.2M)</strong></td>
+        </tr>
+        <tr>
+          <td>Utility (ARE)</td>
+          <td>0.081</td>
+          <td>0.5</td>
+          <td>0.077</td>
+          <td>JSD = 0.25</td>
+          <td><strong>0.109</strong></td>
+        </tr>
+        <tr>
+          <td>ε-Value</td>
+          <td>[0.5, 1.5]</td>
+          <td>0.9</td>
+          <td>2</td>
+          <td>[0.25, 2]</td>
+          <td><strong>[0.0001, 0.045]</strong></td>
+        </tr>
+        <tr>
+          <td>Attack Vectors</td>
+          <td>Reconstruction, Privacy budget, Inference</td>
+          <td>Leakage, Timing, Reconstruction</td>
+          <td>Inference, Reconstruction, Background</td>
+          <td>Inference, Background</td>
+          <td><strong>Background knowledge, Inference, Privacy budget</strong></td>
+        </tr>
+        <tr>
+          <td>Data Scalability</td>
+          <td colspan="4" style="text-align:center;">Domain constraint, static data processing, numerical only</td>
+          <td><strong>Dynamic, multi-domain, avg. runtime &lt; 17ms</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    يُقدّم نموذج <span class="ltr">PRIMε</span> خصوصية تفاضلية ديناميكية تُنشئ بيانات مجهولة الهوية، مما يوفر مقاومة لنواقل الهجوم لأن قيمتَي $\varepsilon$ و$\eta$ لا يمكن التنبؤ بهما ولا استرجاعهما. يحقق <span class="ltr">PRIMε</span> متوسط تعقيد زمني $\Omega(n \log n)$ مع وقت استجابة أقل من 17ms.
+  </p>
+
+  <div class="figure-placeholder">
+    [الشكل 9 — (أ) تحليل الفائدة لمجموعات البيانات D1-D4، (ب) متوسط وقت التشغيل مقابل الاستعلامات المعقدة، (ج-و) تحليل قابلية التوسع على D6 وD7]
+  </div>
+  <div class="figure-caption">الشكل 9: تحليل الفائدة والأداء وقابلية التوسع</div>
+
+  <div class="figure-placeholder">
+    [الشكل 10 — تحليل جودة البيانات على (أ) D6 و(ب) D7 حيث ARE ≤ 1.4 عند ε ≤ 0.01]
+  </div>
+  <div class="figure-caption">الشكل 10: علاقة ARE بقيمة ε على مجموعات D6 وD7</div>
+
+  <div class="figure-placeholder">
+    [الشكل 11 — (أ) بيانات المسار الأصلية — اللون الأحمر يشير إلى المسار عرضة للهجوم، (ب) البيانات المُشوَّشة بـ PRIMε، (ج) المعرفة المكتسبة من المهاجم]
+  </div>
+  <div class="figure-caption">الشكل 11: رسم بياني للمعرفة الخلفية وأثر حماية PRIMε</div>
+
+  <div class="figure-placeholder">
+    [الشكل 12 — متوسط وقت التشغيل مقابل SC على (أ) مجموعة D5 و(ب) مجموعة D6]
+  </div>
+  <div class="figure-caption">الشكل 12: مقارنة وقت التشغيل بين PLUM والأساليب الأخرى</div>
+</section>
+
+<!-- ── VII. Conclusion ── -->
+<section id="conclusion">
+  <h2 class="section-title">VII. الخاتمة والأعمال المستقبلية</h2>
+  <p>
+    قدّمت هذه الورقة نموذج <span class="ltr">PRIMε (Privacy-pReservIng with Min Epsilon)</span> الذي يُعزز الخوارزمية الجينية الحيوية <span class="ltr">GAPRIMε</span> لتحقيق الخصوصية التفاضلية أثناء تعدين البيانات ونشرها. تعمل <span class="ltr">GAPRIMε</span> كأسلوب تحسين استراتيجي لإنتاج الخصوصية التفاضلية. يُحقق <span class="ltr">PRIMε</span> مستوى مثالياً من الخصوصية التفاضلية بتحديد خسارة الخصوصية الصفرية على قطعة بيانات فردية غير متداخلة.
+  </p>
+  <p>
+    يُنجز تعدين الأنماط المتكررة على العناصر المتكررة ديناميكياً عبر تعدين الأنماط في موقع المستخدمين <span class="ltr">(PLUM)</span> الذي يمكن تطبيقه على أي مجموعة بيانات بتحديد العُقد والأضلاع في الشجرة. بالنسبة لمجموعات البيانات النصية، تعمل <span class="ltr">PLUM</span> بسرعة 1.5 مرة أسرع من خوارزميات N-list وFP tree growth وdFIN وnegFIN. يتمتع <span class="ltr">PRIMε</span> بتعقيد زمني أسوأ $\mathcal{O}(n \log n)$ مع وقت استجابة للاستعلام أقل من 17ms.
+  </p>
+  <p>
+    حقّق النموذج قياس $\varepsilon$ في النطاق [0.0001, 0.045] عبر مجموعات البيانات D1 وD2 وD3 وD4 وD5 وD6 بمتوسط خطأ نسبي <span class="ltr">(ARE)</span> يساوي 0.109 في البيانات المُشوَّشة. يُقبل نموذج <span class="ltr">PRIMε</span> البيانات الخاصة تفاضلياً فقط عند $\varepsilon \leq 0.5$ وفق التحقق الرسمي بـ<span class="ltr">PCTL</span>. يُثبت التحليل التجريبي أن <span class="ltr">PRIMε</span> مقاوم لهجمات المعرفة الخلفية والارتباطية وميزانية الخصوصية واستنتاج العضوية.
+  </p>
+  <p>
+    كأعمال مستقبلية، يمكن توسيع <span class="ltr">PRIMε</span> ليستوعب البيانات غير المهيكلة وشبه المهيكلة مع البناء الديناميكي لمجموعة العُقد والأضلاع <span class="ltr">(NE)</span>. يمكن أيضاً تضمين خوارزميات معالجة اللغة الطبيعية في <span class="ltr">GAPRIMε</span> لتقييم حساسية الخصائص وتشويش البيانات وفقاً لذلك.
+  </p>
+</section>
+
+<!-- ── References ── -->
+<section id="references">
+  <h2 class="section-title">المراجع</h2>
+  <ul class="references-list">
+    <li>
+      <span class="ref-num">[1]</span>
+      Y. Li, D. Yang, and X. Hu, "A differential privacy-based privacy-preserving data publishing algorithm for transit smart card data," <em>Transp. Res. C Emerg. Technol.</em>, vol. 115, Jun. 2020, Art. no. 102634.
+    </li>
+    <li>
+      <span class="ref-num">[2]</span>
+      D. Kekulluoglu, N. Kokciyan, and P. Yolum, "Preserving privacy as social responsibility in online social networks," <em>ACM Trans. Internet Technol.</em>, vol. 18, no. 4, pp. 1–22, Nov. 2018.
+    </li>
+    <li>
+      <span class="ref-num">[3]</span>
+      R. Dong, L. Li, Q. Zhang, and G. Cai, "Information diffusion on social media during natural disasters," <em>IEEE Trans. Computat. Social Syst.</em>, vol. 5, no. 1, pp. 265–276, Mar. 2018.
+    </li>
+    <li>
+      <span class="ref-num">[4]</span>
+      Z. Zheng, Z. Li, H. Jiang, L. Y. Zhang, and D. Tu, "Semantic-aware privacy-preserving online location trajectory data sharing," <em>IEEE Trans. Inf. Forensics Security</em>, vol. 17, pp. 2256–2271, 2022.
+    </li>
+    <li>
+      <span class="ref-num">[5]</span>
+      S.-H. Chang, S. Mallissery, C.-H. Hsieh, and Y.-S. Wu, "Hypervisor-based sensitive data leakage detector," in <em>Proc. IEEE Int. Conf. Softw. Quality, Rel. Secur. (QRS)</em>, Jul. 2018, pp. 155–162.
+    </li>
+    <li>
+      <span class="ref-num">[6]</span>
+      X. Shu, D. Yao, and E. Bertino, "Privacy-preserving detection of sensitive data exposure," <em>IEEE Trans. Inf. Forensics Security</em>, vol. 10, no. 5, pp. 1092–1103, May 2015.
+    </li>
+    <li>
+      <span class="ref-num">[22]</span>
+      X. Chen, C. Wang, Q. Yang, T. Hu, and C. Jiang, "The opportunity in difficulty: A dynamic privacy budget allocation mechanism for privacy-preserving multi-dimensional data collection," <em>ACM Trans. Manage. Inf. Syst.</em>, vol. 14, no. 1, pp. 1–24, Mar. 2023.
+    </li>
+    <li>
+      <span class="ref-num">[26]</span>
+      M. Shawkat, M. Badawi, S. El-ghamrawy, R. Arnous, and A. El-desoky, "An optimized FP-growth algorithm for discovery of association rules," <em>J. Supercomput.</em>, vol. 78, no. 4, pp. 5479–5506, Mar. 2022.
+    </li>
+    <li>
+      <span class="ref-num">[31]</span>
+      L. Sweeney, "K-anonymity: A model for protecting privacy," <em>Int. J. Uncertainty, Fuzziness Knowl.-Based Syst.</em>, vol. 10, no. 5, pp. 557–570, Oct. 2002.
+    </li>
+    <li>
+      <span class="ref-num">[38]</span>
+      C. Dwork and A. Roth, "The algorithmic foundations of differential privacy," <em>Found. Trends Theor. Comput. Sci.</em>, vol. 9, nos. 3–4, pp. 211–407, 2014.
+    </li>
+    <li>
+      <span class="ref-num">[39]</span>
+      H. Jiang, J. Pei, D. Yu, J. Yu, B. Gong, and X. Cheng, "Applications of differential privacy in social network analysis: A survey," <em>IEEE Trans. Knowl. Data Eng.</em>, vol. 35, no. 1, pp. 108–127, Jan. 2023.
+    </li>
+    <li>
+      <span class="ref-num">[45]</span>
+      M. E. Gursoy, L. Liu, S. Truex, and L. Yu, "Differentially private and utility preserving publication of trajectory data," <em>IEEE Trans. Mobile Comput.</em>, vol. 18, no. 10, pp. 2315–2329, Oct. 2019.
+    </li>
+    <li>
+      <span class="ref-num">[46]</span>
+      C. Liu, S. Chakraborty, and P. Mittal, "Dependence makes you vulnerable: Differential privacy under dependent tuples," in <em>Proc. Netw. Distrib. Syst. Secur. Symp.</em>, 2016, pp. 21–24.
+    </li>
+    <li>
+      <span class="ref-num">[48]</span>
+      E. Bao, Y. Yang, X. Xiao, and B. Ding, "CGM: An enhanced mechanism for streaming data collection with local differential privacy," <em>Proc. VLDB Endowment</em>, vol. 14, no. 11, pp. 2258–2270, Jul. 2021.
+    </li>
+    <li>
+      <span class="ref-num">[60]</span>
+      B. Zhao, W.-N. Chen, F.-F. Wei, X. Liu, Q. Pei, and J. Zhang, "Evolution as a service: A privacy-preserving genetic algorithm for combinatorial optimization," 2022, <em>arXiv:2205.13948</em>.
+    </li>
+    <li>
+      <span class="ref-num">[61]</span>
+      Y.-F. Ge et al., "A benefit-driven genetic algorithm for balancing privacy and utility in database fragmentation," in <em>Proc. Genetic Evol. Comput. Conf.</em>, Jul. 2019, pp. 771–776.
+    </li>
+    <li>
+      <span class="ref-num">[68]</span>
+      F. Yang, X. Lei, J. Le, N. Mu, and X. Liao, "Minable data publication based on sensitive association rule hiding," <em>IEEE Trans. Emerg. Topics Comput. Intell.</em>, vol. 6, no. 5, pp. 1247–1257, Oct. 2022.
+    </li>
+    <li>
+      <span class="ref-num">[70]</span>
+      C. Baier, E. M. Hahn, B. R. Haverkort, H. Hermanns, and J.-P. Katoen, "Model checking for performability," <em>Math. Struct. Comput. Sci.</em>, vol. 23, no. 4, pp. 751–795, Aug. 2013.
+    </li>
+    <li>
+      <span class="ref-num">[78]</span>
+      A. C. Yao and Y. Zhao, "Privacy-preserving authenticated key-exchange over internet," <em>IEEE Trans. Inf. Forensics Security</em>, vol. 9, no. 1, pp. 125–140, Jan. 2014.
+    </li>
+    <li>
+      <span class="ref-num">[94]</span>
+      J. Kim et al., "The generative network is trained to generate synthetic trajectories using actual datasets," 2021.
+    </li>
+    <li>
+      <span class="ref-num">[98]</span>
+      S. Madhusudhanan, A. C. Jose, J. Sahoo, and R. Malekian, "PRIMε: Novel privacy-preservation model with pattern mining and genetic algorithm," <em>IEEE Trans. Inf. Forensics Security</em>, vol. 19, pp. 571–584, 2024, doi: 10.1109/TIFS.2023.3324769.
+    </li>
+  </ul>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer>
+  <p>
+    S. Madhusudhanan, A. C. Jose, J. Sahoo, R. Malekian —
+    <span dir="ltr" style="unicode-bidi:isolate;">IEEE Trans. Inf. Forensics Security, Vol. 19, 2024, pp. 571–584</span>
+  </p>
+  <p style="margin-top:.4rem; font-size:.8rem;">
+    ترجمة أكاديمية عربية — <a href="../index.html">العودة إلى القائمة الرئيسية</a>
+  </p>
+</footer>
+
+</div><!-- .page-wrapper -->
+</body>
+</html>
