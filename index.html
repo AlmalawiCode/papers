@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الأوراق البحثية — تعدين البيانات والخصوصية التفاضلية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a3a5c;
+      --accent: #2e7d9f;
+      --light: #f5f8fb;
+      --border: #d0dce8;
+      --text: #1e1e2e;
+      --muted: #5a6a7a;
+      --card-shadow: 0 4px 20px rgba(0,0,0,.08);
+    }
+
+    body {
+      direction: rtl;
+      text-align: right;
+      font-family: 'Cairo', 'Arial', sans-serif;
+      color: var(--text);
+      background: var(--light);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a3a5c 0%, #2e5f8a 100%);
+      color: white;
+      padding: 3.5rem 2rem 2.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-family: 'Amiri', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: .8rem;
+    }
+
+    header p {
+      font-size: 1rem;
+      opacity: .85;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 20px;
+      padding: .3rem 1rem;
+      font-size: .82rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .section-label {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Cards ── */
+    .papers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.8rem;
+    }
+
+    .paper-card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .paper-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0,0,0,.13);
+    }
+
+    .card-top {
+      padding: 1.6rem 1.5rem 1rem;
+      flex: 1;
+    }
+
+    .card-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge-tag {
+      font-size: .75rem;
+      padding: .2rem .65rem;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .tag-dp { background: #e3f0fb; color: #1a6aa0; }
+    .tag-mining { background: #e8f5e9; color: #2e7d32; }
+    .tag-privacy { background: #f3e5f5; color: #7b1fa2; }
+    .tag-trajectory { background: #fff3e0; color: #e65100; }
+    .tag-genetic { background: #fce4ec; color: #c62828; }
+    .tag-pattern { background: #e0f7fa; color: #00695c; }
+
+    .card-title {
+      font-family: 'Amiri', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.6;
+      color: var(--primary);
+      margin-bottom: .8rem;
+    }
+
+    .card-abstract {
+      font-size: .88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: .8rem;
+    }
+
+    .card-meta {
+      font-size: .8rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+      margin-top: .5rem;
+    }
+
+    .card-meta span {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .card-bottom {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .btn-read {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: .55rem 1.2rem;
+      border-radius: 8px;
+      font-size: .88rem;
+      font-weight: 600;
+      transition: background .2s;
+    }
+
+    .btn-read:hover { background: var(--accent); }
+
+    .status-badge {
+      font-size: .78rem;
+      padding: .25rem .7rem;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .status-done { background: #e8f5e9; color: #2e7d32; }
+    .status-soon { background: #fff3e0; color: #e65100; }
+
+    /* ── Info banner ── */
+    .info-banner {
+      background: white;
+      border: 1px solid var(--border);
+      border-right: 4px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2.5rem;
+      font-size: .93rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .info-banner strong { color: var(--primary); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--primary);
+      color: rgba(255,255,255,.75);
+      text-align: center;
+      padding: 1.8rem;
+      font-size: .85rem;
+      margin-top: 2rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      main { padding: 2rem 1rem; }
+      .papers-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">أوراق بحثية أكاديمية — ترجمة عربية</div>
+  <h1>تعدين البيانات والخصوصية التفاضلية</h1>
+  <p>ترجمات أكاديمية عربية لأبرز الأوراق البحثية في مجال تعدين البيانات وحماية الخصوصية التفاضلية، معدّة للنشر على GitHub Pages</p>
+</header>
+
+<main>
+
+  <div class="info-banner">
+    <strong>حول هذا المشروع:</strong> يحتوي هذا الموقع على ترجمات عربية شاملة لأوراق بحثية علمية محكّمة في مجال تعدين البيانات وحماية الخصوصية التفاضلية. كل ترجمة تحافظ على البنية الأصلية للورقة مع توفير محتوى RTL احترافي وعرض مناسب للمعادلات الرياضية والخوارزميات والجداول.
+  </div>
+
+  <div class="section-label">الأوراق البحثية المتاحة</div>
+
+  <div class="papers-grid">
+
+    <!-- Paper 1: DP-Eclat -->
+    <div class="paper-card">
+      <div class="card-top">
+        <div class="card-number">1</div>
+        <div class="card-badges">
+          <span class="badge-tag tag-dp">الخصوصية التفاضلية</span>
+          <span class="badge-tag tag-mining">تعدين البيانات</span>
+        </div>
+        <div class="card-title">
+          DP-Eclat: خوارزمية تعدين المجموعات المتكررة العمودية المبنية على الخصوصية التفاضلية
+        </div>
+        <div class="card-abstract">
+          تقترح هذه الورقة خوارزمية DP-Eclat لتعدين المجموعات المتكررة في ظل الخصوصية التفاضلية،
+          باستخدام استراتيجية توزيع ميزانية الخصوصية الجديدة واستراتيجية التقليم المتعدد لتحسين
+          جودة البيانات مع ضمان تحقيق ε-الخصوصية التفاضلية.
+        </div>
+        <div class="card-meta">
+          <span>📄 غوان، ما، لي، باي — جامعة منغوليا الداخلية</span>
+          <span>📅 IEEE TrustCom 2020</span>
+          <span>🔑 FIM، Eclat، آلية لابلاس، شجرة FI-tree</span>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <a href="paper-1-dp-eclat/index.html" class="btn-read">قراءة الورقة ←</a>
+        <span class="status-badge status-done">✓ مترجمة</span>
+      </div>
+    </div>
+
+    <!-- Paper 2: LDP Trajectory -->
+    <div class="paper-card">
+      <div class="card-top">
+        <div class="card-number">2</div>
+        <div class="card-badges">
+          <span class="badge-tag tag-privacy">الخصوصية المحلية</span>
+          <span class="badge-tag tag-trajectory">بيانات المسار</span>
+        </div>
+        <div class="card-title">
+          نشر مسارات الخصوصية التفاضلية المحلية القائمة على الوعي بالشعبية الإقليمية
+        </div>
+        <div class="card-abstract">
+          تعالج هذه الورقة مشكلة نشر بيانات المسار مع الحفاظ على الخصوصية التفاضلية المحلية (LDP)،
+          مع مراعاة الشعبية الإقليمية للمواقع للحصول على نتائج أكثر دقة وفائدة.
+        </div>
+        <div class="card-meta">
+          <span>📄 ورقة بحثية محكّمة</span>
+          <span>🔑 LDP، نشر المسارات، الخصوصية الإقليمية</span>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <span class="btn-read" style="opacity:.5;cursor:not-allowed;">قريباً</span>
+        <span class="status-badge status-soon">⏳ قيد الترجمة</span>
+      </div>
+    </div>
+
+    <!-- Paper 3: PRIM -->
+    <div class="paper-card">
+      <div class="card-top">
+        <div class="card-number">3</div>
+        <div class="card-badges">
+          <span class="badge-tag tag-pattern">تعدين الأنماط</span>
+          <span class="badge-tag tag-genetic">الخوارزميات الجينية</span>
+        </div>
+        <div class="card-title">
+          PRIM: نموذج جديد للحفاظ على الخصوصية بالجمع بين تعدين الأنماط والخوارزمية الجينية
+        </div>
+        <div class="card-abstract">
+          يقترح هذا البحث نموذج PRIM الذي يدمج تعدين الأنماط مع الخوارزمية الجينية للحفاظ على
+          خصوصية البيانات، مع تحقيق توازن مثالي بين الأمان وجودة البيانات المنشورة.
+        </div>
+        <div class="card-meta">
+          <span>📄 ورقة بحثية محكّمة</span>
+          <span>🔑 حماية الخصوصية، تعدين الأنماط، الخوارزمية الجينية</span>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <span class="btn-read" style="opacity:.5;cursor:not-allowed;">قريباً</span>
+        <span class="status-badge status-soon">⏳ قيد الترجمة</span>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <p>ترجمات أكاديمية عربية — مُعدَّة للنشر على GitHub Pages</p>
+  <p style="margin-top:.4rem; font-size:.8rem;">جميع الأوراق البحثية محفوظة لأصحابها الأصليين</p>
+</footer>
+
+</body>
+</html>

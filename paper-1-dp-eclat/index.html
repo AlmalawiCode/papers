@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DP-Eclat: خوارزمية تعدين المجموعات المتكررة العمودية المبنية على الخصوصية التفاضلية</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath:  [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']],
+        tags: 'none'
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header class="paper-header">
+  <div class="conference-badge">
+    IEEE TrustCom 2020 — المؤتمر الدولي التاسع عشر للثقة والأمن والخصوصية في الحوسبة والاتصالات
+  </div>
+  <h1>
+    DP-Eclat: خوارزمية تعدين المجموعات المتكررة العمودية<br>
+    المبنية على الخصوصية التفاضلية
+  </h1>
+  <div class="authors-grid">
+    <div class="author-card">
+      <div class="name">شنغيي غوان</div>
+      <div>المختبر الرئيسي لمنغوليا الداخلية<br>للشبكات اللاسلكية والحوسبة المتنقلة<br>جامعة منغوليا الداخلية، هوهوت، الصين</div>
+      <div class="email">guanshengyi0515@foxmail.com</div>
+    </div>
+    <div class="author-card">
+      <div class="name">شوبين ما</div>
+      <div>المختبر الرئيسي لمنغوليا الداخلية<br>للشبكات اللاسلكية والحوسبة المتنقلة<br>جامعة منغوليا الداخلية، هوهوت، الصين</div>
+      <div class="email">csmaxuebin@imu.edu.cn</div>
+    </div>
+    <div class="author-card">
+      <div class="name">ووينغريل لي</div>
+      <div>المختبر الرئيسي لمنغوليا الداخلية<br>للشبكات اللاسلكية والحوسبة المتنقلة<br>جامعة منغوليا الداخلية، هوهوت، الصين</div>
+      <div class="email">gerile@imu.edu.cn</div>
+    </div>
+    <div class="author-card">
+      <div class="name">شيانغيو باي</div>
+      <div>المختبر الرئيسي لمنغوليا الداخلية<br>للشبكات اللاسلكية والحوسبة المتنقلة<br>جامعة منغوليا الداخلية، هوهوت، الصين</div>
+      <div class="email">bxy@imu.edu.cn</div>
+    </div>
+  </div>
+</header>
+
+<a href="../index.html" class="back-link">&#8594; العودة إلى قائمة الأوراق البحثية</a>
+
+<!-- ═══════════════════ TOC ═══════════════════ -->
+<nav class="toc">
+  <h2>فهرس المحتويات</h2>
+  <ol>
+    <li><a href="#abstract">الملخص</a></li>
+    <li><a href="#introduction">I. المقدمة</a></li>
+    <li><a href="#related">II. الأعمال ذات الصلة</a></li>
+    <li><a href="#preliminaries">III. المفاهيم الأساسية</a>
+      <ol>
+        <li><a href="#dp">الخصوصية التفاضلية</a></li>
+        <li><a href="#fim">تعدين المجموعات المتكررة</a></li>
+      </ol>
+    </li>
+    <li><a href="#dp-eclat">IV. خوارزمية DP-Eclat</a>
+      <ol>
+        <li><a href="#overview">نظرة عامة</a></li>
+        <li><a href="#budget">استراتيجية توزيع ميزانية الخصوصية</a></li>
+        <li><a href="#pruning">استراتيجية التقليم المتعدد</a></li>
+        <li><a href="#fitree">بناء شجرة FI-tree وتعدين المجموعات المتكررة</a></li>
+      </ol>
+    </li>
+    <li><a href="#privacy">V. تحليل الخصوصية</a></li>
+    <li><a href="#experiments">VI. التجارب</a></li>
+    <li><a href="#conclusion">VII. الخلاصة</a></li>
+    <li><a href="#references">المراجع</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main>
+
+<!-- ──────────────────── ABSTRACT ──────────────────── -->
+<section id="abstract">
+  <div class="abstract-box">
+    <div class="abstract-label">الملخص</div>
+    <p>
+      يُعدّ تعدين المجموعات المتكررة موضوعاً محورياً في مجال تعدين البيانات، إذ يُستخدم على نطاق واسع في
+      مجالات اتخاذ القرارات التجارية والاقتصاد والطب والمعلوماتية الحيوية وغيرها. يمكن لتعدين المجموعات
+      المتكررة أن يُوفّر معلومات قيّمة عند اتخاذ القرارات، غير أنه قد ينطوي على مخاطر إفشاء الخصوصية
+      عند نشر هذه المجموعات. تعتمد معظم الحلول القائمة على أسلوب التعدين الأفقي لتعدين المجموعات
+      المتكررة في ظل الخصوصية التفاضلية، إلا أنها تعاني في الغالب من تعقيد في حساب الدعم وضعف في الدقة
+      بسبب المجموعات المرشحة الكبيرة.
+    </p>
+    <p>
+      في هذا البحث، نقترح خوارزمية جديدة لتعدين المجموعات المتكررة العمودية مبنية على الخصوصية
+      التفاضلية، يُطلق عليها <span class="ltr">DP-Eclat</span>. تُقترح في
+      <span class="ltr">DP-Eclat</span> استراتيجية جديدة لتوزيع ميزانية الخصوصية تُرشِّد توزيعها
+      وتُتيح استخدامها بصورة أكثر اكتمالاً. علاوةً على ذلك، صُمِّمت استراتيجية تقليم متعددة لتحسين
+      جودة البيانات من خلال التقليم قبل توليد المجموعات المرشحة وبعده. وعبر تحليل الخصوصية، أثبتنا أن
+      <span class="ltr">DP-Eclat</span> يحقق $\varepsilon$-الخصوصية التفاضلية. كما تُظهر نتائج
+      التجارب المستفيضة على مجموعات بيانات حقيقية متعددة أن
+      <span class="ltr">DP-Eclat</span> يتفوق بشكل ملحوظ على الخوارزميات الحديثة في جودة البيانات.
+    </p>
+    <div class="keywords">
+      <strong>الكلمات المفتاحية:</strong>
+      تعدين المجموعات المتكررة،&nbsp; الخصوصية التفاضلية،&nbsp;
+      <span class="ltr">Eclat</span>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────── SECTION I ──────────────────── -->
+<section id="introduction">
+  <h2 class="section-title">I.&nbsp; المقدمة</h2>
+
+  <p>
+    مع انبلاج عصر المعلومات، بدأت كميات البيانات تتضاعف بصورة أسية، فاتجهت كثير من المؤسسات إلى
+    استخلاص المعلومات القيّمة من البيانات الضخمة. يُعدّ تعدين المجموعات المتكررة
+    (<span class="ltr">FIM</span>)<sup>[1]</sup> ركيزةً أساسية في تعدين البيانات، وقد وجد تطبيقاته
+    الواسعة في الاقتصاد والطب والمعلوماتية الحيوية وغيرها. يستطيع الباحثون توظيف
+    <span class="ltr">FIM</span> لتحديد السمات الأعلى قيمةً من خلال تحليل تكرار كل عنصر في
+    المعاملات، مما يُسهم في اتخاذ قرارات مستقبلية أكثر دقة. غير أن <span class="ltr">FIM</span>،
+    رغم فاعليته، يظل مصدر خطر محتمل لانتهاك الخصوصية إن نُشرت نتائج التعدين مباشرةً.
+  </p>
+
+  <p>
+    في السنوات الأخيرة، بات بمقدور المهاجمين استخدام نماذج هجومية متنوعة لانتزاع المعلومات الخاصة دون
+    الوصول المباشر إلى البيانات. لذا طُوِّرت أساليب حماية متعددة منها:
+    <span class="ltr">k-anonymity</span><sup>[2]</sup> و<span class="ltr">l-diversity</span><sup>[3]</sup>،
+    إلا أن هذه الأساليب تستلزم افتراضات خاصة بشأن المعرفة الخلفية للمهاجم. وللخروج من هذه الإشكالية،
+    اقترحت <span class="ltr">Dwork</span> نموذج الخصوصية التفاضلية<sup>[4]</sup>، وهو نموذج متين
+    يعمل على تحويل مجموعة البيانات إلى نسخة مُعقَّمة أو إضافة قدر مناسب من الضوضاء إلى النتائج
+    الإحصائية. ولكون الخصوصية التفاضلية مبنية على أسس رياضية صارمة، فإنها قادرة على قياس مستوى
+    الحماية بدقة عالية.
+  </p>
+
+  <p>
+    في هذا البحث، نقترح خوارزمية <span class="ltr">DP-Eclat</span> الجديدة التي ترفع من جودة البيانات
+    مع توفير الحماية اللازمة للخصوصية، وذلك باستخدام استراتيجية جديدة لتوزيع ميزانية الخصوصية
+    واستراتيجية تقليم متعددة. لا تحتاج <span class="ltr">DP-Eclat</span> إلا إلى مسح قاعدة البيانات
+    مرة واحدة في البداية، ثم تُحدِّد جميع المجموعات المتكررة عبر بناء شجرة المجموعات المتكررة
+    (<span class="ltr">FI-tree</span>).
+  </p>
+
+  <p>تتمحور أبرز إسهامات هذا البحث حول ما يلي:</p>
+  <p>
+    <strong>1)</strong> تصميم وتنفيذ خوارزمية
+    <span class="ltr">DP-Eclat</span> الجديدة للتعدين العمودي في ظل الخصوصية التفاضلية، القادرة على
+    تحسين جودة البيانات مع ضمان $\varepsilon$-الخصوصية التفاضلية.
+  </p>
+  <p>
+    <strong>2)</strong> تصميم استراتيجية تقليم متعددة واستراتيجية جديدة لتوزيع ميزانية الخصوصية لتحقيق
+    توازن أمثل بين الخصوصية وجودة البيانات.
+  </p>
+  <p>
+    <strong>3)</strong> إثبات رسمي أن <span class="ltr">DP-Eclat</span> يحقق
+    $\varepsilon$-الخصوصية التفاضلية مع أداء متميز على مجموعات بيانات متعددة.
+  </p>
+
+  <p>
+    يسير بقية البحث على النحو الآتي: القسم الثاني يستعرض الأعمال ذات الصلة؛ القسم الثالث يُعرّف
+    المفاهيم الأساسية وتعريفات الخصوصية التفاضلية؛ القسم الرابع يُفصّل خوارزمية
+    <span class="ltr">DP-Eclat</span>؛ القسم الخامس يُقدّم تحليل الخصوصية الرسمي؛ القسم السادس يعرض
+    النتائج التجريبية؛ القسم السابع يختتم البحث.
+  </p>
+</section>
+
+<!-- ──────────────────── SECTION II ──────────────────── -->
+<section id="related">
+  <h2 class="section-title">II.&nbsp; الأعمال ذات الصلة</h2>
+
+  <p>
+    مع التطور المتسارع لتقنيات تعدين البيانات، حظي تصميم وتنفيذ خوارزميات
+    <span class="ltr">FIM</span> ذات الحماية للخصوصية باهتمام واسع.
+    حقّق <span class="ltr">Oliveira</span> وآخرون<sup>[6]</sup> حماية البيانات بدمج محرك بحث
+    المعاملات وبعض الاستعلامات البوليانية ومجموعة من خوارزميات تعقيم قواعد البيانات. اقترح
+    <span class="ltr">Miao</span> وآخرون<sup>[7]</sup> خوارزمية قائمة على حماية الخصوصية لتعدين
+    المجموعات الأكثر تكراراً في البيانات المُجزَّأة رأسياً. واقترح <span class="ltr">Wong</span>
+    وآخرون<sup>[8]</sup> تقنية التشفير بالاستبدال لحماية البيانات المُستعان بها خارجياً. كما اقترح
+    <span class="ltr">Li</span> وآخرون<sup>[9]</sup> خوارزمية <span class="ltr">FIM</span> ذات
+    الحماية القائمة على إعادة بناء قاعدة البيانات.
+  </p>
+
+  <p>
+    حين يمتلك نموذج الهجوم معرفة خلفية واسعة، قد تُخفق الخوارزميات السابقة في توفير ضمانات خصوصية
+    كاملة. لذا، بات الباحثون يتجهون نحو توظيف تقنيات الخصوصية التفاضلية. دمج
+    <span class="ltr">Bhaskar</span><sup>[10]</sup> تعدين المجموعات المتكررة بالخصوصية التفاضلية
+    لأول مرة، مقترحاً خوارزميتَي <span class="ltr">FIM</span> مبنيتَين على آلية الأس وآلية
+    <span class="ltr">Laplace</span>. للتعامل مع البيانات عالية الأبعاد، اقترح
+    <span class="ltr">Li</span> وآخرون<sup>[11]</sup> خوارزمية
+    <span class="ltr">Privbasis</span> التي تُسقط البيانات في مجموعات ذات أبعاد منخفضة ثم تُعدِّن
+    مجموعات <span class="ltr">Top-k</span> المتكررة. وخلص <span class="ltr">Zeng</span>
+    وآخرون<sup>[12]</sup> إلى أن تقييد طول المعاملات يُحسّن جودة النتائج، فاقترحوا خوارزمية
+    <span class="ltr">FIM</span> تفاضلية تعتمد على بتر المعاملات.
+  </p>
+
+  <p>
+    اقترح <span class="ltr">Lee</span> و<span class="ltr">Clifton</span><sup>[13]</sup>
+    خوارزمية مبنية على شجرة <span class="ltr">FP-tree</span> ذات ضوضاء مع خوارزمية
+    <span class="ltr">FP-growth</span>. وللبيانات الكثيفة، اقترح
+    <span class="ltr">Cheng</span> وآخرون<sup>[14]</sup> خوارزمية
+    <span class="ltr">DP-Apriori</span>. واقترح <span class="ltr">Wang</span>
+    وآخرون<sup>[15]</sup> خوارزمية <span class="ltr">PrivSuper</span> التي تبدأ بتعدين
+    المجموعات الأكثر تكراراً بكثافة. وقدّم <span class="ltr">Durfee</span>
+    و<span class="ltr">Rogers</span><sup>[18]</sup> خوارزمية فعّالة لتعدين
+    <span class="ltr">Top-k</span> تجمع بين آلية الأس وضوضاء
+    <span class="ltr">Gumbel</span>.
+  </p>
+
+  <p>
+    على خلاف معظم خوارزميات <span class="ltr">FIM</span> التفاضلية السابقة التي تعتمد أساليب
+    التعدين الأفقي، تُقدّم هذه الورقة خوارزمية <span class="ltr">DP-Eclat</span> التفاضلية
+    العمودية الجديدة، مع استراتيجية تقليم متعددة واستراتيجية توزيع جديدة لميزانية الخصوصية.
+  </p>
+
+  <p>
+    ثمة أيضاً دراسات تدمج الخصوصية التفاضلية مع تعدين الأنماط الأخرى كتعدين الأنماط البيانية
+    وتعدين التسلسلات المتكررة. اقترح <span class="ltr">Shen</span>
+    و<span class="ltr">Yu</span><sup>[19]</sup> خوارزمية قائمة على عيّنات
+    <span class="ltr">Markov chain Monte Carlo</span>. وقدّم
+    <span class="ltr">Chen</span> وآخرون<sup>[21]</sup> خوارزمية جديدة لتعدين التسلسلات
+    التفاضلية تعتمد على نماذج <span class="ltr">n-gram</span> ونموذج
+    <span class="ltr">Markov</span>.
+  </p>
+</section>
+
+<!-- ──────────────────── SECTION III ──────────────────── -->
+<section id="preliminaries">
+  <h2 class="section-title">III.&nbsp; المفاهيم الأساسية</h2>
+
+  <!-- A. Differential Privacy -->
+  <h3 class="subsection-title" id="dp">أ. الخصوصية التفاضلية</h3>
+
+  <p>
+    تضمن الخصوصية التفاضلية أن المهاجم لن يستطيع استنتاج وجود فرد بعينه في مجموعة البيانات من
+    المخرجات العشوائية، حتى لو كان على دراية بوجود جميع الأفراد الآخرين.
+  </p>
+
+  <div class="definition-box">
+    <div class="def-label">التعريف 1: ($\varepsilon$-الخصوصية التفاضلية <sup>[4]</sup>)</div>
+    <p>
+      بالنظر إلى قاعدتَي بيانات $D$ و$D'$، نقول إنهما <em>متجاورتان</em> إذا اختلفتا بسجل واحد
+      على أقصى تقدير. تحقق الخوارزمية $A$ الخصوصية التفاضلية من النوع $\varepsilon$ إذا كانت
+      النتيجة $O$ لأي مخرجات للخوارزمية $A$ على $D$ و$D'$ تحقق:
+    </p>
+    <div class="equation-block">
+      $$\Pr\!\left[A(D) = O\right] \;\leq\; \exp(\varepsilon) \times \Pr\!\left[A(D') = O\right]
+      \qquad (1)$$
+    </div>
+  </div>
+
+  <div class="definition-box">
+    <div class="def-label">التعريف 2: (الحساسية <sup>[5]</sup>)</div>
+    <p>
+      بالنظر إلى أي دالة $f: D \to \mathbb{R}^d$، تُعرَّف حساسية $f$ بـ $\Delta f$ وفق:
+    </p>
+    <div class="equation-block">
+      $$\Delta f \;=\; \max_{D,\,D'}\; \lVert f(D) - f(D') \rVert_1 \qquad (2)$$
+    </div>
+    <p>
+      حيث $D$ و$D'$ أي زوج من قواعد البيانات المتجاورة، و$\lVert\cdot\rVert_1$ النرم الأول
+      للمتجه. تعكس الحساسية الحدَّ الأقصى لفارق نتائج دالة الاستعلام بين قاعدتَي بيانات
+      متجاورتين، وهي عامل مؤثر في تحديد كمية الضوضاء المُضافة.
+    </p>
+  </div>
+
+  <div class="definition-box">
+    <div class="def-label">التعريف 3: (آلية <span class="ltr">Laplace</span>)</div>
+    <p>
+      لأي دالة $f: D \to \mathbb{R}^d$ ذات حساسية $\Delta f$، تحقق الخوارزمية $Q$ الخصوصية
+      التفاضلية من النوع $\varepsilon$ وفق:
+    </p>
+    <div class="equation-block">
+      $$Q(D) \;=\; f(D) \;+\; Lap\!\!\left(\frac{\Delta f}{\varepsilon}\right) \qquad (3)$$
+    </div>
+    <p>
+      حيث $Lap\!\left(\tfrac{\Delta f}{\varepsilon}\right)$ ضوضاء عشوائية تتبع توزيع
+      <span class="ltr">Laplace</span>.
+    </p>
+  </div>
+
+  <div class="theorem-box">
+    <div class="thm-label">النظرية 1: (التركيب التسلسلي <sup>[5]</sup>)</div>
+    <p>
+      لتكن $f_1, \ldots, f_d$ حسابات $d$، وكانت كل $f_i$ تحقق $\varepsilon_i$-الخصوصية
+      التفاضلية، فإن التسلسل $f_i(D)$ على قاعدة البيانات $D$ يحقق
+      $\bigl(\sum \varepsilon_i\bigr)$-الخصوصية التفاضلية.
+    </p>
+  </div>
+
+  <div class="theorem-box">
+    <div class="thm-label">النظرية 2: (التركيب المتوازي <sup>[5]</sup>)</div>
+    <p>
+      لتكن $f_1, \ldots, f_d$ حسابات $d$، وكانت كل $f_i$ تحقق $\varepsilon_i$-الخصوصية
+      التفاضلية على قواعد البيانات المنفصلة $D_1, \ldots, D_d$، فإن التسلسل $f_i(D_i)$ يحقق
+      $\max(\varepsilon_i)$-الخصوصية التفاضلية.
+    </p>
+  </div>
+
+  <p>
+    يُستخدم التركيب التسلسلي والمتوازي — بوصفهما خاصيتَين جوهريتَين للخصوصية التفاضلية — في حل
+    مشكلة توزيع ميزانية الخصوصية في الخوارزميات ذات الطابع التفاضلي.
+  </p>
+
+  <!-- B. Frequent Itemset Mining -->
+  <h3 class="subsection-title" id="fim">ب. تعدين المجموعات المتكررة</h3>
+
+  <p>
+    لتكن $DB = (t_1, t_2, \ldots, t_n)$ قاعدة بيانات معاملات مؤلفة من $n$ معاملة، ولتكن $p$
+    مجموعةً من العناصر. يُعرَّف $support(p)$ بعدد المعاملات المحتوية على $p$ في $DB$. بالنظر إلى
+    الحد الأدنى للدعم $\theta$، فإن $p$ مجموعة متكررة إذا كان $\theta \leq support(p)$. يهدف
+    تعدين المجموعات المتكررة إلى استخراج جميع المجموعات التي يساوي دعمها الحد الأدنى أو يفوقه.
+  </p>
+
+  <!-- TABLE I -->
+  <div class="table-wrapper">
+    <table dir="ltr">
+      <caption style="direction:rtl">جدول I: تنسيق البيانات العمودي لقاعدة البيانات</caption>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Tidset</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>I<sub>1</sub></td><td>1, 4, 5, 7, 8</td></tr>
+        <tr><td>I<sub>2</sub></td><td>1, 2, 3, 4, 5, 8</td></tr>
+        <tr><td>I<sub>3</sub></td><td>5, 6, 7, 8, 9</td></tr>
+        <tr><td>I<sub>4</sub></td><td>1, 4, 5, 8</td></tr>
+        <tr><td>I<sub>5</sub></td><td>1, 2, 3, 5, 8</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    في تعدين المجموعات المتكررة، تتفوق أساليب التعدين العمودية عموماً على الأفقية؛ لأن قواعد البيانات
+    العمودية أصغر حجماً في الغالب، ولا تستلزم مسح قاعدة البيانات مرات عدة.
+    تُعدّ <span class="ltr">Eclat</span><sup>[23]</sup> خوارزمية عمودية كلاسيكية قائمة على مفهوم
+    الفئات المتكافئة اقترحها <span class="ltr">Zaki</span>، وتُحوّل قاعدة البيانات إلى تنسيق
+    عمودي كما يُوضح الجدول I، حيث يتكون كل سجل من عنصر ومجموعة المعاملات التي يظهر فيها
+    (<span class="ltr">tidset</span>). يُعدّ هذا الأسلوب فعّالاً مع البيانات المتفرقة، إلا أنه
+    يُصبح مُكلفاً مع البيانات الكثيفة بسبب اتساع الـ<span class="ltr">tidset</span>.
+  </p>
+
+  <p>
+    لذا، نستعين في هذه الورقة بتمثيل بديل هو <span class="ltr"><strong>diffset</strong></span>
+    <sup>[24]</sup> يُحوّل الـ<span class="ltr">tidset</span> الطويلة ويحسب الدعم وفق:
+  </p>
+
+  <p>
+    <strong>1)</strong> إذا كانت مجموعة معاملات $I_1 I_2$ هي <span class="ltr">tidset</span>،
+    فيكون الدعم:
+  </p>
+  <div class="equation-block">
+    $$support(I_1 I_2) \;=\; length\!\left(tidset(I_1 I_2)\right) \qquad (4)$$
+  </div>
+
+  <p>
+    <strong>2)</strong> إذا كانت مجموعة المعاملات <span class="ltr">diffset</span>، فيكون الدعم:
+  </p>
+  <div class="equation-block">
+    $$support(I_1 I_2) \;=\; support(I_1) \;-\; \lvert diffset(I_1 I_2) \rvert \qquad (5)$$
+  </div>
+
+  <p>
+    بدلاً من الاحتفاظ بمجموعة المعاملات الكاملة، يقتصر الـ<span class="ltr">diffset</span> على
+    تتبع الفروق بين كل عضو في الفئة والمجموعة البادئة، مما يعالج قصور
+    الـ<span class="ltr">tidset</span> مع البيانات الكثيفة. والجمع بين
+    <span class="ltr">tidset</span> و<span class="ltr">diffset</span> يُحسّن كفاءة الخوارزمية
+    وقابليتها للتوسع.
+  </p>
+</section>
+
+<!-- ──────────────────── SECTION IV ──────────────────── -->
+<section id="dp-eclat">
+  <h2 class="section-title">IV.&nbsp; خوارزمية DP-Eclat</h2>
+
+  <!-- A. Overview -->
+  <h3 class="subsection-title" id="overview">أ. نظرة عامة</h3>
+
+  <p>
+    في هذا البحث، سنبني شجرة <span class="ltr">FI-tree</span> بوصفها فضاءً بحثياً لـ
+    <span class="ltr">DP-Eclat</span> استناداً إلى فكرة شجرة تعداد المجموعات، وستُشتقّ جميع
+    المجموعات المتكررة من شجرة <span class="ltr">FI-tree</span> النهائية. ستمسح
+    <span class="ltr">DP-Eclat</span> قاعدة البيانات الأفقية وتُعدِّن أولاً جميع المجموعات
+    المتكررة أحادية العنصر $F_1$، ثم تُحوّل قاعدة البيانات إلى التنسيق العمودي استناداً إلى
+    $F_1$، وستُستخدم $F_1$ لبناء شجرة <span class="ltr">FI-tree</span> لتعدين المجموعات ذات
+    $k$ عناصر في مرحلة لاحقة.
+  </p>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 1: شجرة FI-tree المبنية وفقاً للجدول I (min-support = 3)</strong><br><br>
+    <code style="direction:ltr;display:block;text-align:left;line-height:2">
+      { } {I₂,I₁,I₄,I₅,I₃}<br>
+      I₂{I₁,I₄,I₅}   I₁{I₄,I₅}   I₁{I₄,I₅}   I₄{I₅}   I₅<br>
+      I₂I₁{I₄,I₅} I₂I₄{I₅} I₁I₄{I₅} I₁I₅{} ...<br>
+      I₂I₁I₄{I₅} I₂I₁I₅   I₁I₄I₅<br>
+      I₂I₁I₄I₅
+    </code>
+    <em style="font-size:.82rem">كل عقدة: القسم الأول = مجموعة متكررة ذات k عناصر / القسم الثاني = مرشحات ذات k+1 عناصر</em>
+  </div>
+  <div class="figure-caption">الشكل 1: شجرة FI-tree المبنية وفقاً للجدول I</div>
+
+  <p>
+    في شجرة <span class="ltr">FI-tree</span>، تتألف كل عقدة من قسمين رئيسيين: يخزّن القسم الأول
+    المجموعات المتكررة ذات $k$ عناصر، ويحتوي القسم الثاني على المجموعات المرشحة ذات $k+1$ عناصر
+    المبدوءة بعناصر القسم الأول. فمثلاً، يمكن اعتبار
+    <span class="ltr">$I_2 I_4 \{I_5\}$</span> المجموعة المتكررة الثنائية
+    <span class="ltr">$I_2 I_4$</span> والمجموعة المرشحة الثلاثية
+    <span class="ltr">$I_2 I_4 I_5$</span> في آنٍ واحد.
+  </p>
+
+  <p>
+    تصف الخوارزمية 1 العملية الكاملة لـ <span class="ltr">DP-Eclat</span>، إذ تُقسَّم ميزانية
+    الخصوصية $\varepsilon$ إلى جزأين $\varepsilon_1$ و$\varepsilon_2$: يُخصَّص $\varepsilon_1$
+    لتعدين المجموعات المتكررة أحادية العنصر في قاعدة البيانات الأفقية، ويُخصَّص $\varepsilon_2$
+    لتعدين المجموعات ذات $k$ عناصر في قاعدة البيانات العمودية.
+  </p>
+
+  <!-- ── Algorithm 1 ── -->
+  <div class="algorithm-box">
+    <div class="algo-header">الخوارزمية 1: DP-Eclat</div>
+    <div class="algo-io">
+      <span class="io-label">المدخلات:</span>
+      <span class="io-value">
+        \(D\) — قاعدة بيانات أفقية &emsp;
+        \(\theta\) — الحد الأدنى للدعم &emsp;
+        \(\varepsilon = \varepsilon_1 + \varepsilon_2\) — ميزانية الخصوصية
+      </span>
+    </div>
+    <div class="algo-io">
+      <span class="io-label">المخرجات:</span>
+      <span class="io-value">\(F\) — مجموعة المجموعات المتكررة</span>
+    </div>
+<div class="algo-body" dir="ltr"><span class="lnum">1</span><span class="kw">Input:</span>  D, θ, ε = ε₁ + ε₂
+<span class="lnum">2</span>F₁ ← ∅ ;  F ← ∅ ;  privacy_budget ← ∅
+<span class="lnum">3</span>C₁ ← scan D for all candidate 1-itemsets
+<span class="lnum">4</span>L  ← maximum transaction length in D
+<span class="lnum">5</span><span class="kw">for</span> item <span class="kw">in</span> C₁ <span class="kw">do</span>
+<span class="lnum">6</span>    noise_sup ← support(item) + Lap(L / ε₁)
+<span class="lnum">7</span>    <span class="kw">if</span> noise_sup ≥ θ <span class="kw">then</span>
+<span class="lnum">8</span>        F₁ ← F₁ ∪ {item}
+<span class="lnum">9</span>    <span class="kw">end if</span>
+<span class="lnum">10</span><span class="kw">end for</span>
+<span class="lnum">11</span>D₁          ← convert D to vertical format using F₁
+<span class="lnum">12</span>F₁          ← sort F₁ ascending by support
+<span class="lnum">13</span>privacy_budget ← PrivacyAllocation(ε₂, len(F₁))
+<span class="lnum">14</span>F           ← FindFrequentItemset(D₁, θ, F₁, privacy_budget)
+<span class="lnum">15</span><span class="kw">return</span> F</div>
+  </div>
+
+  <p>
+    يتضح أن <span class="ltr">DP-Eclat</span> لا تحتاج إلا إلى مسح قاعدة البيانات مرة واحدة في
+    البداية، ثم يمكن تعدين جميع المجموعات المتكررة من قاعدة البيانات العمودية، مما يجعلها أكثر
+    كفاءةً في هذه المهمة.
+  </p>
+
+  <!-- B. Privacy Budget Allocation -->
+  <h3 class="subsection-title" id="budget">ب. استراتيجية توزيع ميزانية الخصوصية</h3>
+
+  <p>
+    في خوارزمية <span class="ltr">FIM</span> ذات الخصوصية التفاضلية، نسعى إلى إدخال أقل قدر من
+    الضوضاء لحماية البيانات مع الحفاظ على أعلى جودة ممكنة. تُعدّ ميزانية الخصوصية عاملاً مؤثراً
+    في حجم الضوضاء، ومن المهم توزيعها توزيعاً رشيداً. تستخدم
+    <span class="ltr">DP-Eclat</span> شجرة <span class="ltr">FI-tree</span> بوصفها فضاءً
+    بحثياً؛ وبزيادة عدد طبقات الشجرة يزداد حجم البيانات المحتواة تدريجياً. إن توزيع ميزانية
+    الخصوصية بالتساوي على كل طبقة سيُفضي إلى خلل في نسبة الإشارة إلى الضوضاء، لذا يجب تخصيص
+    ميزانيات مختلفة لكل طبقة وفق خصائص شجرة <span class="ltr">FI-tree</span>.
+  </p>
+
+  <p>
+    نُعرِّف إجمالي عدد طبقات شجرة <span class="ltr">FI-tree</span> (باستثناء العقدة الجذرية)
+    بـ $d$، ونُسنِد وزناً $w_i = \frac{1}{d-(i-1)}$ لكل طبقة حيث $i$ رقم الطبقة الحالية.
+    مجموع الأوزان:
+  </p>
+
+  <div class="equation-block">
+    $$w \;=\; w_1 + w_2 + \cdots + w_i
+      \;=\; \frac{1}{d} + \frac{1}{d-1} + \frac{1}{d-2} + \cdots + \frac{1}{d-i+1}
+      \qquad (6)$$
+  </div>
+
+  <p>
+    وبناءً على ذلك، تُخصَّص لكل طبقة ميزانية خصوصية $\varepsilon_i$ وفق وزنها:
+  </p>
+
+  <div class="equation-block">
+    $$\varepsilon_i \;=\; \frac{\varepsilon}{w} \times w_i \qquad (7)$$
+  </div>
+
+  <p>
+    بإسناد أوزان مختلفة لكل طبقة بهذه الطريقة، تحقق الاستراتيجية الجديدة تناقصاً تدريجياً في
+    الميزانية من الطبقات العليا إلى الدنيا، مما يجعلها أنسب لطبيعة شجرة
+    <span class="ltr">FI-tree</span> ويُتيح استثمار ميزانية الخصوصية بصورة أكثر اكتمالاً.
+  </p>
+
+  <!-- C. Multiple Pruning Strategy -->
+  <h3 class="subsection-title" id="pruning">ج. استراتيجية التقليم المتعدد</h3>
+
+  <p>
+    عامل آخر مؤثر في حجم الضوضاء هو حساسية دالة الاستعلام؛ وتساوي الحساسية في تعدين المجموعات
+    المتكررة عدد المجموعات المرشحة. فلاستعلام دعم مجموعة ذات $k$ عناصر، تساوي الحساسية
+    $C_n^k$ حيث $n$ إجمالي عدد العناصر في قاعدة البيانات. من ثَمّ، يُسهم تقليل عدد المجموعات
+    المرشحة في تخفيض الحساسية وتحسين جودة البيانات. نقترح لذلك استراتيجية التقليم المتعدد التي
+    تتكوّن من قسمين رئيسيين.
+  </p>
+
+  <h4 class="subsubsection-title">1) التقليم المسبق (<span class="ltr">Pre-pruning</span>)</h4>
+  <p>
+    قبل إيجاد المجموعة المرشحة $C_k$، نُقلِّم المجموعات المتكررة ذات $k-1$ عناصر في $F_{k-1}$
+    لتحديد أيّها قابلة لبناء مجموعات ذات $k$ عناصر. إذا ظهر العنصر $i$ في $F_{k-1}(i)$ أقل من
+    $k-1$ مرة في $F_{k-1}$، فإن المجموعة ذات $k$ عناصر الناتجة ستكون بالضرورة غير متكررة.
+  </p>
+
+  <h4 class="subsubsection-title">2) التقليم اللاحق (<span class="ltr">Post-pruning</span>)</h4>
+  <p>
+    بعد توليد $C_k$، تُقلَّم المجموعات المرشحة لمزيد من التقليص ويتألف التقليم اللاحق من جزأين:
+  </p>
+  <p>
+    <strong>أ)</strong> إذا كانت المجموعة ذات $k$ عناصر $P$ متكررة، فيجب أن تكون جميع
+    مجموعاتها الفرعية متكررة أيضاً؛ لذا إذا لم يكن أيٌّ من مجموعاتها الفرعية ذات $k-1$ عنصراً
+    موجوداً في $F_{k-1}$، فإن $P$ ليست متكررة.
+  </p>
+  <p>
+    <strong>ب)</strong> لمجموعة ذات $k$ عناصر $I = \{I_1, I_2, \ldots, I_k\}$ في مجموعة
+    المرشحين، لن تكون متكررة إذا كان $|F_{k-1}(i)| < k - i$، حيث $|F_{k-1}(i)|$ يُمثّل عدد
+    المجموعات المتكررة ذات $k-1$ عنصراً المحتوية على $I_1, I_2, \ldots, I_i$.
+  </p>
+
+  <!-- D. FI-tree construction -->
+  <h3 class="subsection-title" id="fitree">د. بناء شجرة FI-tree وتعدين المجموعات المتكررة</h3>
+
+  <p>
+    تصف الخوارزمية 2 بناء شجرة <span class="ltr">FI-tree</span> وعملية تعدين المجموعات المتكررة.
+    في شجرة <span class="ltr">FI-tree</span>، تتكون كل عقدة من ثلاثة أجزاء:
+    <strong><span class="ltr">prefix</span></strong> — الجزء البادئة للعقدة الحالية،
+    <strong><span class="ltr">member</span></strong> — جميع أعضاء الفئة المتكافئة ذات البادئة،
+    <strong><span class="ltr">child</span></strong> — مجموعة العقد الأبناء.
+  </p>
+
+  <!-- ── Algorithm 2 ── -->
+  <div class="algorithm-box">
+    <div class="algo-header">الخوارزمية 2: FindFrequentItemset</div>
+    <div class="algo-io">
+      <span class="io-label">المدخلات:</span>
+      <span class="io-value">
+        \(D_1\) — قاعدة بيانات عمودية &emsp;
+        \(\theta\) — الحد الأدنى للدعم &emsp;
+        \(F_1\) — المجموعات المتكررة أحادية العنصر &emsp;
+        <em>privacy_budget</em> — مصفوفة الميزانية
+      </span>
+    </div>
+    <div class="algo-io">
+      <span class="io-label">المخرجات:</span>
+      <span class="io-value">\(F\) — مجموعة المجموعات المتكررة</span>
+    </div>
+<div class="algo-body" dir="ltr"><span class="lnum">1</span>F ← F ∪ F₁
+<span class="lnum">2</span><span class="kw">Create</span> Root node:
+<span class="lnum">3</span>    Root.prefix ← ∅
+<span class="lnum">4</span>    Root.member ← F₁
+<span class="lnum">5</span>    Root.child  ← ∅
+<span class="lnum">6</span><span class="kw">for</span> item <span class="kw">in</span> Root.member <span class="kw">do</span>
+<span class="lnum">7</span>    <span class="kw">create</span> node item:
+<span class="lnum">8</span>        item.prefix ← item
+<span class="lnum">9</span>        item.member ← F_item   <span class="cmt">// elements after item in F₁</span>
+<span class="lnum">10</span>        item.child  ← ∅
+<span class="lnum">11</span>    Root.child ← Root.child ∪ {item}
+<span class="lnum">12</span><span class="kw">end for</span>
+<span class="lnum">13</span>MiningFK(Root.child, F₁, 2)
+<span class="lnum">14</span><span class="kw">return</span> F</div>
+  </div>
+
+  <!-- ── Algorithm 3 ── -->
+  <div class="algorithm-box">
+    <div class="algo-header">الخوارزمية 3: MiningFK(N, f, k)</div>
+    <div class="algo-io">
+      <span class="io-label">المدخلات:</span>
+      <span class="io-value">
+        \(N\) — عقد الطبقة الحالية &emsp;
+        \(f\) — مجموعة المجموعات المتكررة للطبقة السابقة &emsp;
+        \(k\) — رقم الطبقة الحالية
+      </span>
+    </div>
+<div class="algo-body" dir="ltr"><span class="lnum">1</span>M   ← ∅           <span class="cmt">// nodes for the next layer</span>
+<span class="lnum">2</span>ε̄  ← C(len(F₁), k) / privacy_budget(k − 1)
+<span class="lnum">3</span>F_k ← ∅           <span class="cmt">// frequent k-itemsets in current layer</span>
+<span class="lnum">4</span><span class="kw">for</span> i <span class="kw">in</span> N <span class="kw">do</span>
+<span class="lnum">5</span>    <span class="kw">if</span> i.member ≠ ∅ <span class="kw">and</span> i.prefix ∈ f <span class="kw">then</span>
+<span class="lnum">6</span>        <span class="kw">for</span> m <span class="kw">in</span> i.member <span class="kw">do</span>      <span class="cmt">// post-pruning pass</span>
+<span class="lnum">7</span>            mem ← i.prefix + m
+<span class="lnum">8</span>            <span class="kw">if</span> all (k−1)-subsets of mem ∈ F_{k-1}
+                   <span class="kw">and</span> |F_{k-1}(i)| ≥ k − i <span class="kw">then</span>
+<span class="lnum">9</span>                <span class="kw">if</span> mem.set <span class="kw">is</span> tidset <span class="kw">then</span>
+<span class="lnum">10</span>                    noise_sup ← len(tidset(mem.set)) + Lap(ε̄)
+<span class="lnum">11</span>                <span class="kw">else if</span> mem.set <span class="kw">is</span> diffset <span class="kw">then</span>
+<span class="lnum">12</span>                    noise_sup ← support(i) − len(diffset(mem.set)) + Lap(ε̄)
+<span class="lnum">13</span>                <span class="kw">end if</span>
+<span class="lnum">14</span>                <span class="kw">if</span> noise_sup ≥ θ <span class="kw">then</span>
+<span class="lnum">15</span>                    <span class="kw">create</span> node Mem:
+<span class="lnum">16</span>                        Mem.prefix ← mem
+<span class="lnum">17</span>                        Mem.member ← F_mem   <span class="cmt">// elements after mem in current equiv. class</span>
+<span class="lnum">18</span>                        Mem.child  ← ∅
+<span class="lnum">19</span>                    i.child ← i.child ∪ {Mem}
+<span class="lnum">20</span>                    M   ← M ∪ i
+<span class="lnum">21</span>                    F_k ← F_k ∪ {mem}
+<span class="lnum">22</span>                <span class="kw">end if</span>
+<span class="lnum">23</span>            <span class="kw">end if</span>
+<span class="lnum">24</span>        <span class="kw">end for</span>
+<span class="lnum">25</span>    <span class="kw">end if</span>
+<span class="lnum">26</span><span class="kw">end for</span>
+<span class="lnum">27</span>F ← F ∪ F_k
+<span class="lnum">28</span><span class="kw">for</span> fre_k <span class="kw">in</span> F_k <span class="kw">do</span>           <span class="cmt">// pre-pruning pass</span>
+<span class="lnum">29</span>    <span class="kw">for</span> j <span class="kw">in</span> fre_k <span class="kw">do</span>
+<span class="lnum">30</span>        <span class="kw">if</span> count(fre_k(j) in F_{k-1}) &lt; k − 1 <span class="kw">then</span>
+<span class="lnum">31</span>            remove fre_k from F_k   <span class="cmt">// cannot generate (k+1)-itemsets</span>
+<span class="lnum">32</span>        <span class="kw">end if</span>
+<span class="lnum">33</span>    <span class="kw">end for</span>
+<span class="lnum">34</span><span class="kw">end for</span>
+<span class="lnum">35</span>MiningFK(M, F_k, k + 1)         <span class="cmt">// recurse into next layer</span></div>
+  </div>
+
+  <p>
+    قبل تعدين المجموعات ذات $k$ عناصر في الطبقة الحالية، تحصل
+    <span class="ltr">DP-Eclat</span> على حصة ميزانية الخصوصية المخصصة لهذه الطبقة عبر
+    الاستراتيجية الجديدة (السطر 2). تبدأ بالمرور على جميع العقد في $N$، وتُقلّم المجموعة
+    المرشحة في كل عقدة: إذا كانت جميع المجموعات الفرعية ذات $k-1$ عنصراً موجودة في $F_{k-1}$
+    وعدد تواجد أوّل $i$ عناصر لا يقل عن $k-i$، فقد تكون <span class="ltr">mem</span> مجموعة
+    متكررة. يُحسب دعم <span class="ltr">mem</span> بالضوضاء باستخدام صيغ
+    <span class="ltr">tidset</span> أو <span class="ltr">diffset</span>. إن تجاوز هذا الدعم
+    الحد الأدنى $\theta$، تُنشأ عقدة جديدة وتُضاف <span class="ltr">mem</span> إلى $F_k$.
+    بعد تعدين جميع المجموعات ذات $k$ عناصر، تُجرى عملية التقليم المسبق تمهيداً للطبقة التالية.
+  </p>
+</section>
+
+<!-- ──────────────────── SECTION V ──────────────────── -->
+<section id="privacy">
+  <h2 class="section-title">V.&nbsp; تحليل الخصوصية</h2>
+
+  <div class="theorem-box">
+    <div class="thm-label">النظرية 3: خوارزمية <span class="ltr">DP-Eclat</span> تحقق
+      $\varepsilon$-الخصوصية التفاضلية.</div>
+
+    <p>
+      <strong>الإثبات:</strong> يمكن تقسيم <span class="ltr">DP-Eclat</span> في تحليل الخصوصية
+      إلى مرحلتين:
+    </p>
+
+    <p>
+      <strong>المرحلة الأولى</strong> — تستخدم $\varepsilon_1$ لتعدين جميع المجموعات المتكررة
+      أحادية العنصر في قاعدة البيانات الأفقية. ترتبط الحد الأقصى لطول المعاملات $L$ ارتباطاً
+      وثيقاً بحجم الضوضاء، لذا تحصل <span class="ltr">DP-Eclat</span> على $L$ مسبقاً دون اتصال
+      بالإنترنت (<span class="ltr">offline</span>). إضافة أو حذف معاملة بطول $L$ يؤثر على دعم
+      ما يصل إلى $L$ مجموعة أحادية العنصر بمقدار 1، لذا فإن إضافة ضوضاء
+      $Lap\!\left(\tfrac{L}{\varepsilon_1}\right)$ إلى الدعم الحقيقي لكل مجموعة مرشحة يحقق:
+    </p>
+    <div class="equation-block">
+      $$\frac{\varepsilon_1}{L} \times L \;=\; \varepsilon_1\text{-differential privacy}$$
+    </div>
+
+    <p>
+      <strong>المرحلة الثانية</strong> — تُسنِد
+      <span class="ltr">DP-Eclat</span> وزناً $w_i = \frac{1}{d-(i-1)}$ لكل طبقة، وتُضبط
+      ميزانية خصوصية كل طبقة على:
+      $\varepsilon_{2i} = \tfrac{\varepsilon_2}{w} \times w_i$.
+      مجموع ميزانيات الخصوصية المستخدمة في هذه المرحلة:
+    </p>
+    <div class="equation-block">
+      $$\varepsilon \;=\; \frac{\varepsilon_2}{w}\!\times\!\frac{1}{d}
+        + \frac{\varepsilon_2}{w}\!\times\!\frac{1}{d-1}
+        + \cdots
+        + \frac{\varepsilon_2}{w}\!\times\!\frac{1}{d-(i-1)}
+        \;=\; \frac{\varepsilon_2}{w} \times w \;=\; \varepsilon_2 \qquad (8)$$
+    </div>
+
+    <p>
+      حساسية <span class="ltr">DP-Eclat</span> في تعدين المجموعات ذات $k$ عناصر هي
+      $\Delta f = C^k_{len(F_1)}$. إضافة أو حذف معاملة يؤثر على دعم كل مجموعة مرشحة بمقدار 1
+      على أقصى تقدير. لذا فإن إضافة ضوضاء
+      $Lap\!\left(\tfrac{\Delta f}{\varepsilon_{2k}}\right)$ لكل مجموعة مرشحة في الطبقة الحالية
+      يحقق $\varepsilon_{2k}$-الخصوصية التفاضلية. ووفقاً للمعادلة (8) ومبدأ التركيب التسلسلي،
+      تحقق المرحلة الثانية $\varepsilon_2$-الخصوصية التفاضلية.
+    </p>
+
+    <p>
+      أخيراً، ووفقاً لمبدأ التركيب التسلسلي، تحقق
+      <span class="ltr">DP-Eclat</span> بمجملها
+      $\varepsilon_1 + \varepsilon_2 = \varepsilon$-الخصوصية التفاضلية.
+      <span style="float:left">■</span>
+    </p>
+  </div>
+</section>
+
+<!-- ──────────────────── SECTION VI ──────────────────── -->
+<section id="experiments">
+  <h2 class="section-title">VI.&nbsp; التجارب</h2>
+
+  <p>
+    تُقارن هذه الورقة <span class="ltr">DP-Eclat</span> بخوارزميتين من أحدث الخوارزميات:
+    <span class="ltr">SmartTruncation (ST)</span> التي اقترحها
+    <span class="ltr">Zeng</span><sup>[12]</sup> وتعتمد بتر المعاملات الطويلة؛ و
+    <span class="ltr">Privbasis</span> التي اقترحها
+    <span class="ltr">Li</span><sup>[11]</sup> وتجد بصورة خاصة مجموعات
+    <span class="ltr">Top-k</span> المتكررة. أُجريت كل خوارزمية 10 مرات وسُجِّل متوسط النتائج.
+  </p>
+
+  <!-- A. Datasets -->
+  <h3 class="subsection-title">أ. مجموعات البيانات</h3>
+
+  <p>
+    لتقييم أداء <span class="ltr">DP-Eclat</span>، اختُبرت خمس مجموعات بيانات حقيقية:
+    <span class="ltr">Accidents</span><sup>[25]</sup> (بيانات حوادث مرورية)؛
+    <span class="ltr">BMS-POS</span><sup>[26]</sup> (بيانات نقاط بيع)؛
+    <span class="ltr">Mushroom</span><sup>[26]</sup> (سمات فيزيائية للفطر)؛
+    <span class="ltr">Pumsb</span><sup>[26]</sup> (بيانات تعداد سكاني)؛
+    <span class="ltr">Retail</span><sup>[25]</sup> (سلة مشتريات من متجر تجزئة).
+  </p>
+
+  <!-- TABLE II -->
+  <div class="table-wrapper">
+    <table dir="ltr">
+      <caption style="direction:rtl">جدول II: مجموعات البيانات المستخدمة في التجارب</caption>
+      <thead>
+        <tr>
+          <th>Dataset</th>
+          <th>#Transactions</th>
+          <th>#Items</th>
+          <th>Max. length</th>
+          <th>Avg. length</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Accidents</td><td>340,183</td><td>468</td><td>51</td><td>33.8</td></tr>
+        <tr><td>BMS-POS</td><td>545,597</td><td>1,657</td><td>164</td><td>6.5</td></tr>
+        <tr><td>Mushroom</td><td>8,124</td><td>119</td><td>23</td><td>23</td></tr>
+        <tr><td>Pumsb</td><td>49,046</td><td>2,088</td><td>63</td><td>50.5</td></tr>
+        <tr><td>Retail</td><td>88,162</td><td>16,470</td><td>76</td><td>10.3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- B. Utility Measures -->
+  <h3 class="subsection-title">ب. مقاييس الجودة</h3>
+
+  <p>
+    يُقيَّم الأداء بمقياسَي الجودة الشائعَين:
+    <span class="ltr"><strong>F-Score</strong></span><sup>[14]</sup> لقياس الدقة، و
+    <span class="ltr"><strong>RE</strong> (Relative Error)</span><sup>[14]</sup> للخطأ النسبي.
+  </p>
+
+  <p>
+    لتكن $F$ مجموعة المجموعات المتكررة الحقيقية و$F'$ المجموعات المنشورة بالخوارزمية، يُعرَّف
+    <span class="ltr">F-Score</span> بـ:
+  </p>
+  <div class="equation-block">
+    $$\text{F-Score} \;=\; 2\times\frac{precision \times recall}{precision + recall}
+    \qquad (9)$$
+  </div>
+  <div class="equation-block">
+    $$precision \;=\; \frac{|F \cap F'|}{|F'|} \qquad recall \;=\; \frac{|F \cap F'|}{|F|}$$
+  </div>
+
+  <p>كما يُعرَّف <span class="ltr">RE</span> بـ:</p>
+  <div class="equation-block">
+    $$RE \;=\; \underset{x\,\in\,F'}{median}\;\frac{sup'_x - sup_x}{sup_x} \qquad (10)$$
+  </div>
+
+  <p>
+    حيث $sup'_x$ الدعم بعد إضافة الضوضاء، و$sup_x$ الدعم الأصلي. كلما كبر
+    <span class="ltr">F-Score</span> كانت النتائج أقرب إلى الأصل، وكلما صغر
+    <span class="ltr">RE</span> كان الخطأ أقل.
+  </p>
+
+  <!-- C. Effect of Threshold -->
+  <h3 class="subsection-title">ج. تأثير عتبة الحد الأدنى للدعم</h3>
+
+  <p>
+    تُظهر الأشكال 2-4 أداء
+    <span class="ltr">DP-Eclat</span> و<span class="ltr">ST</span>
+    و<span class="ltr">Privbasis</span> على مجموعات
+    <span class="ltr">Accidents</span> و<span class="ltr">Mushroom</span>
+    و<span class="ltr">Retail</span> تحت عتبات مختلفة، مع تثبيت
+    $\varepsilon = 1$ وتوزيعها
+    $\varepsilon_1 = \varepsilon/3$، $\varepsilon_2 = 2\varepsilon/3$.
+  </p>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 2: تأثير العتبة — <span class="ltr">Accidents</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 2: تأثير العتبة على مجموعة بيانات Accidents</div>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 3: تأثير العتبة — <span class="ltr">Mushroom</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 3: تأثير العتبة على مجموعة بيانات Mushroom</div>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 4: تأثير العتبة — <span class="ltr">Retail</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 4: تأثير العتبة على مجموعة بيانات Retail</div>
+
+  <p>
+    يتضح بجلاء أن <span class="ltr">DP-Eclat</span> تتفوق على
+    <span class="ltr">ST</span> و<span class="ltr">Privbasis</span> في
+    <span class="ltr">F-Score</span> على جميع مجموعات البيانات؛ ويعود ذلك إلى أن استراتيجية
+    التقليم المتعدد تُقلّص حجم المجموعات المرشحة بصورة ملموسة، فضلاً عن أن الاستراتيجية الجديدة
+    لتوزيع الميزانية تُرشِّد التوزيع وتُدخل ضوضاء أقل. يُلاحظ أن
+    <span class="ltr">Privbasis</span> تتفوق على
+    <span class="ltr">DP-Eclat</span> في <span class="ltr">RE</span> لأنها تخزّن المجموعات في
+    مجموعات صغيرة $\theta$-basis تُقلّص الضوضاء. بيد أن
+    <span class="ltr">DP-Eclat</span> تُحقق أداءً أفضل من
+    <span class="ltr">ST</span> في <span class="ltr">RE</span> على جميع مجموعات البيانات.
+  </p>
+
+  <!-- D. Effect of Privacy Budget -->
+  <h3 class="subsection-title">د. تأثير ميزانية الخصوصية</h3>
+
+  <p>
+    تُقارن الأشكال 5-7 أداء الخوارزميات الثلاث تحت ميزانيات خصوصية تتراوح بين 0.5 و1.25، مع
+    تثبيت عتبات <span class="ltr">Mushroom</span> و<span class="ltr">Accidents</span>
+    و<span class="ltr">BMS-POS</span> عند 0.6 و0.6 و0.03 على التوالي.
+  </p>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 5: تأثير ميزانية الخصوصية — <span class="ltr">Accidents</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 5: تأثير ميزانية الخصوصية على مجموعة Accidents</div>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 6: تأثير ميزانية الخصوصية — <span class="ltr">BMS-POS</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 6: تأثير ميزانية الخصوصية على مجموعة BMS-POS</div>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 7: تأثير ميزانية الخصوصية — <span class="ltr">Mushroom</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 7: تأثير ميزانية الخصوصية على مجموعة Mushroom</div>
+
+  <p>
+    من الأشكال 5-7 يتضح أن <span class="ltr">F-Score</span>
+    و<span class="ltr">RE</span> لجميع الخوارزميات تتحسن تدريجياً مع زيادة ميزانية الخصوصية.
+    تتفوق <span class="ltr">DP-Eclat</span> على
+    <span class="ltr">ST</span> و<span class="ltr">Privbasis</span> في
+    <span class="ltr">F-Score</span>، وعلى <span class="ltr">ST</span> في
+    <span class="ltr">RE</span> على جميع مجموعات البيانات.
+  </p>
+
+  <!-- E. Effect of k -->
+  <h3 class="subsection-title">هـ. تأثير $k$ في تعدين Top-k المجموعات المتكررة</h3>
+
+  <p>
+    تُظهر الأشكال 8-10 أداء الخوارزميات الثلاث لتعدين
+    <span class="ltr">Top-k</span> المجموعات المتكررة بقيم $k$ مختلفة مع تثبيت $\varepsilon = 1$.
+  </p>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 8: تأثير $k$ — <span class="ltr">Accidents</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 8: تأثير k على مجموعة بيانات Accidents</div>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 9: تأثير $k$ — <span class="ltr">BMS-POS</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 9: تأثير k على مجموعة بيانات BMS-POS</div>
+
+  <div class="figure-placeholder">
+    <strong>الشكل 10: تأثير $k$ — <span class="ltr">Pumsb</span></strong><br>
+    <span dir="ltr">(a) F-Score &nbsp;|&nbsp; (b) RE</span>
+  </div>
+  <div class="figure-caption">الشكل 10: تأثير k على مجموعة بيانات Pumsb</div>
+
+  <p>
+    يتضح أن <span class="ltr">F-Score</span> لجميع الخوارزميات يتراجع بزيادة $k$، غير أن
+    <span class="ltr">DP-Eclat</span> تظل متفوقة على
+    <span class="ltr">ST</span> و<span class="ltr">Privbasis</span> في جميع مجموعات البيانات،
+    وتُحقق أداءً أفضل من <span class="ltr">ST</span> في
+    <span class="ltr">RE</span> على جميعها.
+  </p>
+</section>
+
+<!-- ──────────────────── SECTION VII ──────────────────── -->
+<section id="conclusion">
+  <h2 class="section-title">VII.&nbsp; الخلاصة</h2>
+
+  <p>
+    في هذا البحث، قدّمنا خوارزمية <span class="ltr">DP-Eclat</span> الجديدة لتعدين المجموعات
+    المتكررة في ظل الخصوصية التفاضلية، التي ترفع من جودة البيانات مع ضمان أمنها. على خلاف
+    الخوارزميات السابقة، لا تحتاج <span class="ltr">DP-Eclat</span> إلا إلى مسح قاعدة البيانات
+    مرة واحدة في البداية لتُعدِّن جميع المجموعات المتكررة بصورة خاصة.
+  </p>
+
+  <p>
+    صمّمنا استراتيجية جديدة لتوزيع ميزانية الخصوصية تُخصّص لكل طبقة من شجرة
+    <span class="ltr">FI-tree</span> ميزانيةً ملائمة، واقترحنا استراتيجية تقليم متعددة تُقلّص عدد
+    المجموعات المرشحة بشكل فعّال. وعبر تحليل الخصوصية الرسمي، أثبتنا أن
+    <span class="ltr">DP-Eclat</span> تحقق $\varepsilon$-الخصوصية التفاضلية. كما كشفت نتائج
+    التجارب المستفيضة تفوّق <span class="ltr">DP-Eclat</span> الملحوظ على الخوارزميات السابقة.
+  </p>
+
+  <p>
+    <strong>الشكر والتقدير:</strong> تحظى هذه الورقة بدعم مؤسسة العلوم الطبيعية لمنغوليا الداخلية
+    (رقم المنحة: <span class="ltr">2018MS06026</span>) وبرنامج العلوم والتكنولوجيا للمنطقة ذاتية
+    الحكم لمنغوليا الداخلية (رقم المنحة: <span class="ltr">2019GG116</span>).
+  </p>
+</section>
+
+<!-- ──────────────────── REFERENCES ──────────────────── -->
+<section id="references">
+  <h2 class="section-title">المراجع</h2>
+  <ol class="references-list">
+    <li><span class="ref-num">[1]</span>Agrawal, R., Imielinski, T., &amp; Swami, A. N. "Mining association rules between sets of items in large databases." <em>SIGMOD</em>, pp. 207–216, 1993.</li>
+    <li><span class="ref-num">[2]</span>Sweeney, L. "K-anonymity: a model for protecting privacy." <em>Int. J. Uncertainty, Fuzziness and Knowledge-Based Systems</em>, vol. 10, no. 5, pp. 557–570, 2002.</li>
+    <li><span class="ref-num">[3]</span>Machanavajjhala, A., Kifer, D., &amp; Gehrke, J. "L-diversity: Privacy beyond k-anonymity." <em>ACM TKDD</em>, vol. 1, no. 1, 2007.</li>
+    <li><span class="ref-num">[4]</span>Dwork, C. "Differential privacy." <em>ICALP</em>, pp. 1–12, 2006.</li>
+    <li><span class="ref-num">[5]</span>Dwork, C., McSherry, F., Nissim, K., &amp; Smith, A. "Calibrating noise to sensitivity in private data analysis." <em>TCC</em>, pp. 265–284, 2006.</li>
+    <li><span class="ref-num">[6]</span>Oliveira, S. R. M., &amp; Zaiane, O. R. "Privacy preserving frequent itemset mining." <em>IEEE PSDM</em>, 2002.</li>
+    <li><span class="ref-num">[7]</span>Miao, Y., Zhang, X., Wu, K., &amp; Su, J. "An Efficient Algorithm for Privacy Preserving Maximal Frequent Itemsets Mining." <em>PAAP</em>, pp. 115–118, 2011.</li>
+    <li><span class="ref-num">[8]</span>Wong, W. K., Cheung, D. W., Hung, E., Kao, B., &amp; Mamoulis, N. "Security in outsourcing of association rule mining." <em>VLDB</em>, pp. 111–122, 2007.</li>
+    <li><span class="ref-num">[9]</span>Li, S., Mu, N., Le, J., &amp; Liao, X. "Privacy preserving frequent itemset mining: Maximizing data utility based on database reconstruction." <em>Computers &amp; Security</em>, vol. 84, pp. 17–34, 2019.</li>
+    <li><span class="ref-num">[10]</span>Bhaskar, R., Laxman, S., Smith, A., &amp; Thakurta, A. "Discovering frequent patterns in sensitive data." <em>KDD</em>, pp. 503–512, 2010.</li>
+    <li><span class="ref-num">[11]</span>Li, N., Qardaji, W., Su, D., &amp; Cao, J. "Privbasis: Frequent itemset mining with differential privacy." <em>PVLDB</em>, vol. 5, no. 11, pp. 1340–1351, 2012.</li>
+    <li><span class="ref-num">[12]</span>Zeng, C., Naughton, J. F., &amp; Cai, J. "On differentially private frequent itemset mining." <em>PVLDB</em>, vol. 6, no. 1, pp. 25–36, 2012.</li>
+    <li><span class="ref-num">[13]</span>Lee, J., &amp; Clifton, C. "Top-k frequent itemsets via differentially private FP-trees." <em>KDD</em>, pp. 931–940, 2014.</li>
+    <li><span class="ref-num">[14]</span>Cheng, X., Su, S., Xu, S., &amp; Li, Z. "DP-Apriori: A differentially private frequent itemset mining algorithm based on transaction splitting." <em>Computers &amp; Security</em>, vol. 50, pp. 74–90, 2015.</li>
+    <li><span class="ref-num">[15]</span>Wang, N., et al. "PrivSuper: A Superset-First Approach to Frequent Itemset Mining under Differential Privacy." <em>ICDE</em>, pp. 809–820, 2017.</li>
+    <li><span class="ref-num">[16]</span>Xiong, X., et al. "Frequent Itemsets Mining with Differential Privacy over Large-scale Data." <em>IEEE Access</em>, vol. 6, pp. 28877–28889, 2018.</li>
+    <li><span class="ref-num">[17]</span>Wang, Y., Qiao, Y., Liu, Z., &amp; Huang, Z. "HighPU: A high privacy-utility approach to mining frequent itemset with differential privacy." <em>Int. J. Embedded Systems</em>, vol. 11, no. 5, pp. 624–633, 2019.</li>
+    <li><span class="ref-num">[18]</span>Durfee, D., &amp; Rogers, R. "Practical Differentially Private Top-k Selection with Pay-what-you-get Composition." <em>NeurIPS</em>, pp. 3532–3542, 2019.</li>
+    <li><span class="ref-num">[19]</span>Shen, E., &amp; Yu, T. "Mining frequent graph patterns with differential privacy." <em>KDD</em>, pp. 545–553, 2013.</li>
+    <li><span class="ref-num">[20]</span>Cheng, X., et al. "A two-phase algorithm for differentially private frequent subgraph mining." <em>IEEE TKDE</em>, vol. 30, no. 8, pp. 1411–1425, 2018.</li>
+    <li><span class="ref-num">[21]</span>Chen, R., Acs, G., &amp; Castelluccia, C. "Differentially private sequential data publication via variable-length n-grams." <em>CCS</em>, pp. 638–649, 2012.</li>
+    <li><span class="ref-num">[22]</span>Shen, E., &amp; Yu, T. "Mining frequent graph patterns with differential privacy." <em>KDD</em>, pp. 545–553, 2013.</li>
+    <li><span class="ref-num">[23]</span>Zaki, M. J. "Scalable algorithms for association mining." <em>IEEE TKDE</em>, vol. 12, no. 3, pp. 372–390, 2000.</li>
+    <li><span class="ref-num">[24]</span>Trieu, T., &amp; Kunieda, Y. "An improvement for dEclat algorithm." <em>ICUIMC</em>, 2012.</li>
+    <li><span class="ref-num">[25]</span>Zheng, Z., Kohavi, R., &amp; Mason, L. "Real world performance of association rule algorithms." <em>KDD</em>, pp. 401–406, 2001.</li>
+    <li><span class="ref-num">[26]</span>Frequent itemset mining dataset repository. <span dir="ltr">http://fimi.ua.ac.be/data</span></li>
+  </ol>
+</section>
+
+</main>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <p>
+    ترجمة أكاديمية للورقة البحثية الأصلية المنشورة في:<br>
+    <span dir="ltr">IEEE TrustCom 2020 — DOI: 10.1109/TrustCom50675.2020.00233</span>
+  </p>
+  <p style="margin-top:.5rem;">
+    <a href="../index.html">&#8594; العودة إلى الصفحة الرئيسية</a>
+  </p>
+</footer>
+
+</div><!-- /page-wrapper -->
+</body>
+</html>
